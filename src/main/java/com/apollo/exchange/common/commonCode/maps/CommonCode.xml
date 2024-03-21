@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CommonCode">
+
+    <select id="selectListByGroupName" parameterType="com.apollo.exchange.common.commonCode.dto.CommonCodeDTO" resultType="com.apollo.exchange.common.commonCode.dto.CommonCodeDTO">
+        SELECT
+            COMMON_CODE_ID
+            , LANG_CODE
+            , GROUP_NAME
+            , CODE_NAME
+            , CODE_VALUE
+            , USE_YN
+            , ORDER_NO
+            , REG_DATE
+        FROM
+            COMMON_CODE
+        WHERE
+            GROUP_NAME = #{groupName}
+            AND LANG_CODE = #{langCode}
+            <if test="useYn != null &amp;&amp; useYn != ''"> AND USE_YN = 'Y' </if>
+        ORDER BY ORDER_NO ASC
+    </select>
+
+</mapper>

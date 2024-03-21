@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminWalletClient">
+
+    <update id="updateOne" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletClientDTO">
+        UPDATE
+            WALLET_CLIENT
+        SET
+            CLIENT_ID = #{clientId}
+        WHERE
+            WALLET_ID = #{walletId}
+    </update>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletClientDTO">
+        INSERT INTO WALLET_CLIENT (WALLET_ID, CLIENT_ID)
+        VALUES
+        (#{walletId}, #{clientId})
+    </insert>
+</mapper>

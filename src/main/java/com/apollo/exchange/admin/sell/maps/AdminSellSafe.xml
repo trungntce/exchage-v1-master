@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminSellSafe">
+    <select id="selectCount" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellSearchDTO" resultType="int">
+        SELECT COUNT(TS.SELL_ID)
+        FROM TOKEN_SELL TS
+        INNER JOIN TOKEN_SELL TS_REF ON TS.SELL_ID = TS_REF.P_SELL_ID
+        LEFT JOIN TOKEN_SELL_TRADE_HISTORY TSTH ON TS.SELL_ID = TSTH.SELL_ID
+        LEFT JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+        WHERE TS.SELL_ID IN (SELECT P_SELL_ID FROM TOKEN_SELL WHERE SELLER_WALLET_ADDRESS = #{walletAddress} AND VIEW_ROLE = 'OWNER_SAFE')
+        AND TS.STATE = 4
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="keywordType != null &amp;&amp; keywordType !=''"> AND ${keywordType} like '%${keyword}%' </if>
+    </select>
+
+    <select id="selectList" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellSearchDTO" resultType="com.apollo.exchange.admin.sell.dto.AdminSellDTO">
+        SELECT *
+        FROM (
+            SELECT
+                @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                , A.*
+            FROM (
+                SELECT
+                    TS.SELL_ID
+                    , TS.P_SELL_ID
+                    , TS.CLIENT_ID
+                    , C.NAME AS CLIENT_NAME
+                    , TS.SELL_TYPE
+                    , TS.SYMBOL
+                    , TS.VIEW_ROLE
+                    , TS.SELLER_WALLET_ADDRESS
+                    , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TS.SELLER_WALLET_ADDRESS) AS SELLER_NAME
+                    , TS.BANK_NAME
+                    , TS.BANK_OWNER
+                    , TS.BANK_ACCOUNT
+                    , TS.QUANTITY
+                    , TS.UNIT_PRICE
+                    , TS.TOTAL_PRICE
+                    , TS.STATE
+                    , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'STATE' AND CODE_VALUE=TS.STATE AND LANG_CODE='${langCode}') AS STATE_NAME
+                    , TS.DEL_YN
+                    , TSTH.TRADE_STATE
+                    , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'SELL_TRADE_STATE' AND CODE_VALUE=TSTH.TRADE_STATE AND LANG_CODE='${langCode}') AS TRADE_STATE_NAME
+                    , TSTH.BUYER_WALLET_ADDRESS
+                    , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TSTH.BUYER_WALLET_ADDRESS) AS BUYER_NAME
+                    , TSTH.TXID
+                    , TS.TRADE_COMPLETION_DATE
+                    , TS.REG_DATE
+                    , TS.REG_WALLET_ADDRESS
+                    , TS_REF.SELL_ID AS REF_SELL_ID
+                    , TS_REF.STATE AS REF_SELL_STATE
+                FROM TOKEN_SELL TS
+                INNER JOIN TOKEN_SELL TS_REF ON TS.SELL_ID = TS_REF.P_SELL_ID
+                LEFT JOIN TOKEN_SELL_TRADE_HISTORY TSTH ON TS.SELL_ID = TSTH.SELL_ID
+                LEFT JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+                WHERE TS.SELL_ID IN (SELECT P_SELL_ID FROM TOKEN_SELL WHERE SELLER_WALLET_ADDRESS = #{walletAddress} AND VIEW_ROLE = 'OWNER_SAFE')
+                AND TS.STATE = 4
+                <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+                <if test="keywordType != null &amp;&amp; keywordType !=''"> AND ${keywordType} like '%${keyword}%' </if>
+                 ) A, (SELECT @ROWNUM :=0) TEMP
+                ORDER BY ${orderByColumn} ${orderByType}
+                LIMIT ${start}, ${limit}
+            ) RESULT
+    </select>
+</mapper>

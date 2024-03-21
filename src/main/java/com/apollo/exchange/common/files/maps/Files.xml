@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="Files">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.files.dto.FilesDTO" useGeneratedKeys="true" keyProperty="fileId" keyColumn="file_id">
+        INSERT INTO FILES (FILE_TYPE, FILE_PATH, FILE_NAME, FILE_HASH_NAME, FILE_EXT, FILE_SIZE, FILE_STATUS, REG_DT)
+        VALUES (#{fileType}, #{filePath}, #{fileName}, #{fileHashName}, #{fileExt}, #{fileSize}, #{fileStatus}, NOW())
+    </insert>
+    <select id="selectFeedbackFiles"
+            resultType="com.apollo.exchange.common.files.dto.FilesDTO">
+        SELECT
+            ROW_NUMBER() OVER(ORDER BY REG_DATE) AS ROW_NUM
+            , F.FEEDBACK_ID AS REF_ID
+            , FS.*
+            FROM FEEDBACK F
+            LEFT JOIN FEEDBACK_FILE FF
+            ON F.FEEDBACK_ID = FF.FEEDBACK_ID
+            LEFT JOIN FILES FS
+            ON FF.FILE_ID = FS.FILE_ID
+        WHERE F.DEL_YN = 'N'
+        AND F.FEEDBACK_ID = #{feedbackId} OR F.REF_ID = #{feedbackId}
+    </select>
+
+</mapper>

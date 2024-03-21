@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TokenBuyTradeHistory">
+    <update id="updateByBuyId" parameterType="com.apollo.exchange.web.buy.dto.BuyTradeDTO">
+
+        UPDATE
+            TOKEN_BUY_TRADE_HISTORY
+            SET
+                TRADE_STATE = #{tradeState}
+                , TXID = #{txid}
+                , SELLER_WALLET_ADDRESS = #{sellerWalletAddress}
+                , BANK_NAME = #{bankName}
+                , BANK_OWNER = #{bankOwner}
+                , BANK_ACCOUNT = #{bankAccount}
+            WHERE
+                BUY_ID = #{buyId}
+    </update>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.web.buy.dto.BuyTradeDTO">
+
+        UPDATE
+            TOKEN_BUY_TRADE_HISTORY
+            SET
+                BUY_ID = #{buyId}
+                , TRADE_STATE = #{tradeState}
+                , TXID = #{txid}
+                , SELLER_WALLET_ADDRESS = #{sellerWalletAddress}
+                , BANK_NAME = #{bankName}
+                , BANK_OWNER = #{bankOwner}
+                , BANK_ACCOUNT = #{bankAccount}
+            WHERE
+                BUY_TRADE_HISTORY_ID = #{buyTradeHistoryId}
+    </update>
+
+    <update id="updateStateByIds" parameterType="com.apollo.exchange.web.buy.dto.BuyTradeDTO">
+        UPDATE
+        TOKEN_BUY_TRADE_HISTORY
+        SET
+        TRADE_STATE = #{tradeState}
+        WHERE
+        BUY_TRADE_HISTORY_ID IN
+        <foreach item="item" index="index" collection="buyTradeHistoryIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="selectOneByBuyTradeHistoryId" parameterType="com.apollo.exchange.web.buy.dto.BuyTradeDTO"
+            resultType="com.apollo.exchange.web.buy.dto.BuyTradeDTO">
+
+        SELECT
+            TTBTH.BUY_TRADE_HISTORY_ID
+            , TTBTH.BUY_ID
+            , TTBTH.TRADE_STATE
+            , TTBTH.TXID
+            , TTBTH.SELLER_WALLET_ADDRESS
+            , TTBTH.BANK_NAME
+            , TTBTH.BANK_OWNER
+            , TTBTH.BANK_ACCOUNT
+            , TTBTH.REG_DATE
+        FROM
+            TOKEN_BUY_TRADE_HISTORY TTBTH
+        WHERE
+            TTBTH.BUY_TRADE_HISTORY_ID = #{buyTradeHistoryId}
+            AND TTBTH.TRADE_STATE != 5
+    </select>
+    <insert id="insertOne" parameterType="com.apollo.exchange.web.buy.dto.BuyTradeDTO">
+
+        <![CDATA[
+        INSERT INTO TOKEN_BUY_TRADE_HISTORY
+            (
+                BUY_ID
+                , TRADE_STATE
+                , TXID
+                , SELLER_WALLET_ADDRESS
+                , BANK_NAME
+                , BANK_OWNER
+                , BANK_ACCOUNT
+            )
+            VALUES
+            (
+                #{buyId}
+                , #{tradeState}
+                , #{txid}
+                , #{sellerWalletAddress}
+                , #{bankName}
+                , #{bankOwner}
+                , #{bankAccount}
+            )
+        ]]>
+        <selectKey resultType="Int" keyProperty="buyTradeHistoryId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectOutOfDateList" parameterType="com.apollo.exchange.web.buy.dto.BuyTradeDTO" resultType="com.apollo.exchange.web.buy.dto.BuyTradeDTO">
+
+        SELECT
+            TB.BUY_ID
+            , TB.BUY_TYPE
+            , TB.STATE
+            , TBTH.BUY_TRADE_HISTORY_ID
+            , TBTH.TRADE_STATE
+            , TBTH.SELLER_WALLET_ADDRESS
+        FROM TOKEN_BUY TB
+        LEFT JOIN
+        TOKEN_BUY_TRADE_HISTORY TBTH
+            ON TB.BUY_ID = TBTH.BUY_ID
+        WHERE TBTH.TRADE_STATE IN
+        <foreach item="item" index="index" collection="tradeStates" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <![CDATA[
+                AND TBTH.REG_DATE <  DATE_SUB(NOW(), INTERVAL #{minute} MINUTE)
+        ]]>
+    </select>
+
+
+</mapper>

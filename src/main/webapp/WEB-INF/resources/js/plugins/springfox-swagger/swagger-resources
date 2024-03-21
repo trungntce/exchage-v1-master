@@ -1,0 +1,7 @@
+[
+    {
+        "name": "public-api",
+        "location": "/v2/api-docs?group=public-api",
+        "swaggerVersion": "2.0"
+    }
+]

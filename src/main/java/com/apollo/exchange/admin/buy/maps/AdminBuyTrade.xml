@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminBuyTrade">
+
+    <select id="selectOneByBuyId" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuyTradeDTO" resultType="com.apollo.exchange.admin.buy.dto.AdminBuyTradeDTO">
+        SELECT
+            BUY_TRADE_HISTORY_ID
+            , BUY_ID
+            , TRADE_STATE
+            , TXID
+            , SELLER_WALLET_ADDRESS
+            , BANK_NAME
+            , BANK_OWNER
+            , BANK_ACCOUNT
+            , REG_DATE
+        FROM
+            TOKEN_BUY_TRADE_HISTORY
+        WHERE
+            BUY_ID = #{buyId}
+    </select>
+
+    <update id="updateState" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuyTradeDTO">
+        UPDATE
+            TOKEN_BUY_TRADE_HISTORY
+        SET
+            TRADE_STATE = #{state}
+        WHERE
+            BUY_ID = #{buyId}
+    </update>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuyTradeDTO">
+        UPDATE
+            TOKEN_BUY_TRADE_HISTORY
+        SET
+            TRADE_STATE = #{tradeState}
+            , TXID = #{txid}
+            , SELLER_WALLET_ADDRESS = #{sellerWalletAddress}
+            , BANK_NAME = #{bankName}
+            , BANK_OWNER = #{bankOwner}
+            , BANK_ACCOUNT = #{bankAccount}
+            , REG_DATE = #{regDate}
+        WHERE
+            BUY_ID = #{buyId}
+            AND BUY_TRADE_HISTORY_ID = #{buyTradeHistoryId}
+    </update>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuyTradeDTO" useGeneratedKeys="true" keyProperty="buyTradeHistoryId" keyColumn="buy_trade_history_id">
+        INSERT INTO TOKEN_BUY_TRADE_HISTORY ( BUY_ID, TRADE_STATE, TXID, SELLER_WALLET_ADDRESS, BANK_NAME, BANK_OWNER, BANK_ACCOUNT)
+        VALUES ( #{buyId}, #{tradeState}, #{txid}, #{sellerWalletAddress}, #{bankName}, #{bankOwner}, #{bankAccount})
+    </insert>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="WalletRole">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.wallet.dto.WalletRoleDTO">
+        INSERT INTO WALLET_ROLE (
+            WALLET_ID
+            , ROLE
+        ) VALUES (
+            #{walletId}
+            , #{role}
+        )
+    </insert>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.common.wallet.dto.WalletRoleDTO">
+        UPDATE
+            WALLET_ROLE
+        SET
+            ROLE = #{role}
+        WHERE
+            WALLET_ID = #{walletId}
+    </update>
+</mapper>

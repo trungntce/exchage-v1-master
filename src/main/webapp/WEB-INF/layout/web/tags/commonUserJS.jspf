@@ -1,0 +1,44 @@
+
+<script src="${_ctx}/resources/js/web/js-plugins/leaflet.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/MarkerClusterGroup.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/crum-mega-menu.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/waypoints.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/jquery-circle-progress.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/segment.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/bootstrap.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/imagesLoaded.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/jquery.matchHeight.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/jquery-countTo.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/Headroom.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/jquery.magnific-popup.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/popper.min.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/particles.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/perfect-scrollbar.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/jquery.datetimepicker.full.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/svgxuse.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/select2.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/smooth-scroll.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/sharer.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/isotope.pkgd.min.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/ajax-pagination.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/swiper.min.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/material.min.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/orbitlist.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/highstock.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/bootstrap-datepicker.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/TimeCircles.js"></script>
+<script src="${_ctx}/resources/js/web/js-plugins/ion.rangeSlider.js"></script>
+
+<script src="${_ctx}/resources/js/plugins/clipboard/clipboard.js"></script>
+<script src="${_ctx}/resources/js/plugins/fullpage/dist/fullpage.js"></script>
+
+<!-- FontAwesome 5.x.x JS -->
+
+<script defer src="${_ctx}/resources/fonts/fontawesome-all.js"></script>
+
+<script src="${_ctx}/resources/js/web/main.js"></script>
+<script src="${_ctx}/resources/js/plugins/web3/web3.min.js"></script>
+<script src="${_ctx}/resources/js/common.js"></script>
+
+<!-- SVG icons loader -->
+<!-- /SVG icons loader -->

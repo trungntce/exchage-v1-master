@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="FeedbackFile">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.feedback.dto.FeedbackFileDTO">
+        INSERT INTO FEEDBACK_FILE
+        (
+            FEEDBACK_ID,
+            FILE_ID
+        )
+        VALUES
+        (
+            #{feedbackId},
+            #{fileId}
+        )
+
+    </insert>
+
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WalletAlarm">
+    <select id="selectListByWalletAddress" parameterType="com.apollo.exchange.common.walletAlarm.dto.WalletAlarmDTO"
+            resultType="com.apollo.exchange.common.walletAlarm.dto.WalletAlarmDTO">
+        SELECT *
+            FROM WALLET_ALARM
+        WHERE 1
+        <if test="alarmWalletAddress != null &amp;&amp; alarmWalletAddress != ''"> AND ALARM_WALLET_ADDRESS = #{alarmWalletAddress} </if>
+        <if test="alarmType != null &amp;&amp; alarmType != ''"> AND ALARM_TYPE = #{alarmType} </if>
+        <if test="checkYn != null  &amp;&amp; checkYn != ''"> AND CHECK_YN = #{checkYn}</if>
+        <if test="delYn != null  &amp;&amp; delYn != ''"> AND DEL_YN = #{delYn}</if>
+        <if test="lastedId != null &amp;&amp; lastedId != ''"> AND ALARM_ID > #{lastedId} </if>
+        ORDER BY WALLET_ALARM_ID DESC
+
+    </select>
+    <update id="updateCheckYn" parameterType="com.apollo.exchange.common.walletAlarm.dto.WalletAlarmDTO">
+        UPDATE WALLET_ALARM
+        SET CHECK_YN = #{checkYn}
+        WHERE ALARM_WALLET_ADDRESS = #{alarmWalletAddress}
+        <if test="walletAlarmId != null &amp;&amp; walletAlarmId != ''"> AND WALLET_ALARM_ID = #{walletAlarmId}</if>
+    </update>
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.walletAlarm.dto.WalletAlarmDTO">
+        INSERT INTO WALLET_ALARM
+        (
+            ALARM_TYPE
+            , ALARM_WALLET_ADDRESS
+            , TITLE
+            , CONTENTS
+            , CHECK_YN
+            , DEL_YN
+        )
+        VALUES
+        (
+            #{alarmType}
+            , #{alarmWalletAddress}
+            , #{title}
+            , #{contents}
+            , #{checkYn}
+            , #{delYn}
+        )
+    </insert>
+    <insert id="insertAllTrader" parameterType="com.apollo.exchange.common.walletAlarm.dto.WalletAlarmDTO">
+        <![CDATA[
+            INSERT INTO WALLET_ALARM
+            (ALARM_TYPE, ALARM_WALLET_ADDRESS, TITLE, CONTENTS, CHECK_YN, DEL_YN)
+                SELECT #{alarmType}, W.WALLET_ADDRESS, #{title}, #{contents}, 'N', 'N'
+					FROM WALLET W
+					LEFT JOIN WALLET_ROLE WR
+                    ON W.WALLET_ID = WR.WALLET_ID
+						WHERE WR.ROLE = 'TRADER'
+        ]]>
+    </insert>
+
+</mapper>

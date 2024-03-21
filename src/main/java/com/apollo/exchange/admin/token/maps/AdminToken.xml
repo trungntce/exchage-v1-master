@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminToken">
+
+    <!-- 토큰 리스트 카운트. -->
+    <select id="selectCount" parameterType="com.apollo.exchange.admin.token.dto.AdminTokenSearchDTO" resultType="int">
+            SELECT
+                COUNT(T.SYMBOL)
+            FROM TOKEN T
+            INNER JOIN WALLET W ON T.SYMBOL = W.SYMBOL
+            INNER JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+            WHERE WR.ROLE = 'OPERATOR'
+            <if test="symbol != null &amp;&amp; symbol != ''"> AND T.SYMBOL = #{symbol} </if>
+    </select>
+
+    <!-- 토큰 리스트 가져오기. -->
+    <select id="selectTokenList" parameterType="com.apollo.exchange.admin.token.dto.AdminTokenSearchDTO" resultType="com.apollo.exchange.admin.token.dto.AdminTokenDTO">
+        SELECT *
+        FROM (
+             SELECT
+                @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                , A.*
+             FROM (
+                 SELECT
+                     T.SYMBOL
+                     , T.NAME
+                     , T.OPERATOR
+                     , T.UNIT_PRICE
+                     , T.USE_YN
+                     , T.REG_DATE
+                     , W.WALLET_ADDRESS
+                     , W.FEE
+                     , WR.ROLE
+                 FROM TOKEN T
+                 INNER JOIN WALLET W ON T.SYMBOL = W.SYMBOL
+                 INNER JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+                 WHERE WR.ROLE = 'OPERATOR' AND T.USE_YN = 'Y'
+                <if test="operator != null &amp;&amp; operator !=''"> AND T.OPERATOR = #{operator} </if>
+                <if test="symbol != null &amp;&amp; symbol != ''"> AND T.SYMBOL = #{symbol} </if>
+             ) A, (SELECT @ROWNUM :=0) TEMP
+             ORDER BY ROWNUM DESC
+             LIMIT ${start}, ${limit}
+         ) RESULT
+    </select>
+
+    <!-- 토큰 상세 가져오기. -->
+    <select id="selectOne" parameterType="com.apollo.exchange.admin.token.dto.AdminTokenSearchDTO" resultType="com.apollo.exchange.admin.token.dto.AdminTokenDTO">
+        <![CDATA[
+            SELECT
+                T.SYMBOL
+                 , T.NAME
+                 , T.OPERATOR
+                 , T.UNIT_PRICE
+                 , T.USE_YN
+                 , T.REG_DATE
+                 , W.WALLET_ADDRESS
+                 , W.FEE
+                 , WR.ROLE
+            FROM TOKEN T
+            INNER JOIN WALLET W ON T.SYMBOL = W.SYMBOL
+            INNER JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+            WHERE WR.ROLE = 'OPERATOR'
+            AND T.SYMBOL = '${symbol}'
+        ]]>
+    </select>
+
+    <select id="selectWalletOpByToken" parameterType="com.apollo.exchange.admin.token.dto.AdminTokenSearchDTO" resultType="com.apollo.exchange.admin.wallet.dto.AdminWalletDTO">
+        SELECT W.WALLET_ADDRESS AS WALLET_ADDRESS
+        , W.BANK_NAME AS BANK_NAME
+        , W.BANK_OWNER AS BANK_OWNER
+        , W.BANK_ACCOUNT AS BANK_ACCOUNT
+        , W.NAME AS NAME
+        , W.TEL AS TEL
+        , W.EMAIL AS EMAIL
+        , U.LOGIN_ID AS LOGIN_ID
+        FROM WALLET W
+        LEFT JOIN USER_WALLET UW ON W.WALLET_ID = UW.WALLET_ID
+        LEFT JOIN USER U ON UW.USER_ID = U.USER_ID
+        INNER JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+        WHERE WR.ROLE = 'OPERATOR'
+        <if test="symbol != null &amp;&amp; symbol !=''"> AND W.SYMBOL = #{symbol} </if>
+    </select>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.admin.token.dto.AdminTokenDTO">
+        UPDATE
+            TOKEN
+        SET
+            NAME = #{name}
+            , OPERATOR = #{operator}
+            , UNIT_PRICE = #{unitPrice}
+            , USE_YN = #{useYn}
+        WHERE
+            SYMBOL = #{symbol}
+    </update>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.token.dto.AdminTokenDTO">
+        INSERT INTO TOKEN (SYMBOL, NAME, OPERATOR, UNIT_PRICE, USE_YN)
+        VALUES (#{symbol}, #{name}, #{operator}, #{unitPrice}, 'Y')
+    </insert>
+</mapper>

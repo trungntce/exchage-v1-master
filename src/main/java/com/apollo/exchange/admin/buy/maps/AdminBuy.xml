@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminBuy">
+
+    <!-- 토큰 리스트 카운트. -->
+    <select id="selectCount" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuySearchDTO" resultType="int">
+        <![CDATA[
+            SELECT
+                 COUNT(TB.BUY_ID)
+            FROM
+                TOKEN_BUY TB
+                LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH ON TB.BUY_ID = TBTH.BUY_ID
+                LEFT JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+            WHERE 1=1
+        ]]>
+        <if test="symbol != null"> AND C.SYMBOL = #{symbol} </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="keywordType != null &amp;&amp; keywordType !=''">
+            <![CDATA[       AND ${keywordType} like '%${keyword}%' ]]>
+        </if>
+        <if test="buyType != null &amp;&amp; buyType !=''">
+            <![CDATA[       AND BUY_TYPE = '${buyType}' ]]>
+        </if>
+        <if test="walletAddress != null &amp;&amp; walletAddress !=''">
+            <![CDATA[    AND (TB.BUYER_WALLET_ADDRESS = '${walletAddress}' OR TBTH.SELLER_WALLET_ADDRESS = '${walletAddress}') ]]>
+        </if>
+        <if test="symbol != null &amp;&amp; symbol !=''">
+            <![CDATA[    AND TB.SYMBOL = '${symbol}' ]]>
+        </if>
+        <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+            <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+            </if>
+            <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+            </if>
+        </if>
+    </select>
+
+    <!-- 토큰 리스트 가져오기. -->
+    <select id="selectBuyList" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuySearchDTO" resultType="com.apollo.exchange.admin.buy.dto.AdminBuyDTO">
+        <![CDATA[
+            SELECT *
+            FROM (
+                 SELECT
+                     @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                    , A.*
+                 FROM (
+                     SELECT
+                         TB.BUY_ID
+                         , TB.P_BUY_ID
+                         , TB.CLIENT_ID
+                         , C.NAME AS CLIENT_NAME
+                         , TB.BUY_TYPE
+                         , TB.SYMBOL
+                         , TB.VIEW_ROLE
+                         , TB.BUYER_WALLET_ADDRESS
+                         , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TB.BUYER_WALLET_ADDRESS) AS BUYER_NAME
+                         , TB.QUANTITY
+                         , TB.UNIT_PRICE
+                         , TB.TOTAL_PRICE
+                         , TB.STATE
+                         , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'STATE' AND CODE_VALUE=TB.STATE AND LANG_CODE='${langCode}') AS STATE_NAME
+                         , TB.DEL_YN
+                         , TBTH.TRADE_STATE
+                         , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'BUY_TRADE_STATE' AND CODE_VALUE=TBTH.TRADE_STATE AND LANG_CODE='${langCode}') AS TRADE_STATE_NAME
+                         , TBTH.SELLER_WALLET_ADDRESS
+                         , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TBTH.SELLER_WALLET_ADDRESS) AS SELLER_NAME
+                         , TBTH.TXID
+                         , TBTH.BANK_NAME
+                         , TBTH.BANK_OWNER
+                         , TBTH.BANK_ACCOUNT
+                         , TB.TRADE_COMPLETION_DATE
+                         , TB.REG_DATE
+                         , TB.REG_WALLET_ADDRESS
+                     FROM
+                        TOKEN_BUY TB
+                        LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH ON TB.BUY_ID = TBTH.BUY_ID
+                        LEFT JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+                     WHERE 1=1
+        ]]>
+                    <if test="symbol != null &amp;&amp; symbol !=''"> AND C.SYMBOL = #{symbol} </if>
+                    <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+                    <if test="keywordType != null &amp;&amp; keywordType !=''">
+                        <![CDATA[       AND ${keywordType} like '%${keyword}%' ]]>
+                    </if>
+                     <if test="buyType != null &amp;&amp; buyType !=''">
+                     <![CDATA[       AND BUY_TYPE = '${buyType}' ]]>
+                     </if>
+                    <if test="walletAddress != null &amp;&amp; walletAddress !=''">
+                        <![CDATA[    AND (TB.BUYER_WALLET_ADDRESS = '${walletAddress}' OR TBTH.SELLER_WALLET_ADDRESS = '${walletAddress}') ]]>
+                    </if>
+                    <if test="symbol != null &amp;&amp; symbol !=''">
+                        <![CDATA[    AND TB.SYMBOL = '${symbol}' ]]>
+                    </if>
+                    <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+                        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                            <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+                        </if>
+                        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                            <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+                        </if>
+                    </if>
+        <![CDATA[
+                 ) A, (SELECT @ROWNUM :=0) TEMP
+        ]]>
+        <if test="orderByColumn != null &amp;&amp; orderByColumn !=''">
+            ORDER BY ${orderByColumn} ${orderByType}
+        </if>
+        <![CDATA[
+                 LIMIT ${start}, ${limit}
+             ) RESULT
+        ]]>
+    </select>
+
+    <!-- 토큰 상세 가져오기. -->
+    <select id="selectOne" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuySearchDTO" resultType="com.apollo.exchange.admin.buy.dto.AdminBuyDTO">
+        <![CDATA[
+            SELECT
+                 TB.BUY_ID
+                 , TB.P_BUY_ID
+                 , TB.CLIENT_ID
+                 , TB.BUY_TYPE
+                 , TB.SYMBOL
+                 , TB.VIEW_ROLE
+                 , TB.BUYER_WALLET_ADDRESS
+                 , TB.QUANTITY
+                 , TB.UNIT_PRICE
+                 , TB.TOTAL_PRICE
+                 , TB.STATE
+                 , TB.DEL_YN
+                 , TB.TRADE_COMPLETION_DATE
+                 , TB.REG_DATE
+                 , TBTH.SELLER_WALLET_ADDRESS
+                 , TBTH.TRADE_STATE
+                 , TB.REG_WALLET_ADDRESS
+            FROM
+                TOKEN_BUY TB
+                LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH ON TB.BUY_ID = TBTH.BUY_ID
+            WHERE 1=1
+            AND TB.BUY_ID = '${buyId}'
+        ]]>
+        <if test="buyType != null &amp;&amp; buyType !=''">
+            <![CDATA[       AND BUY_TYPE = '${buyType}' ]]>
+        </if>
+    </select>
+
+    <!-- 토큰 상세 가져오기. -->
+    <select id="selectByPBuyId" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuySearchDTO" resultType="com.apollo.exchange.admin.buy.dto.AdminBuyDTO">
+            SELECT
+                 TB.BUY_ID
+                 , TB.P_BUY_ID
+                 , TB.CLIENT_ID
+                 , TB.BUY_TYPE
+                 , TB.SYMBOL
+                 , TB.VIEW_ROLE
+                 , TB.BUYER_WALLET_ADDRESS
+                 , TB.QUANTITY
+                 , TB.UNIT_PRICE
+                 , TB.TOTAL_PRICE
+                 , TB.STATE
+                 , TB.DEL_YN
+                 , TB.TRADE_COMPLETION_DATE
+                 , TB.REG_DATE
+                 , TBTH.SELLER_WALLET_ADDRESS
+                 , TBTH.TRADE_STATE
+                 , TB.REG_WALLET_ADDRESS
+            FROM
+                TOKEN_BUY TB
+                LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH ON TB.BUY_ID = TBTH.BUY_ID
+            WHERE 1=1
+            AND TB.P_BUY_ID = #{pBuyId}
+    </select>
+
+    <update id="updateState" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuyDTO">
+        UPDATE
+            TOKEN_BUY
+        SET
+            STATE = #{state}
+            <if test="tradeCompletionDate != null"> , TRADE_COMPLETION_DATE = NOW() </if>
+        WHERE
+            BUY_ID = #{buyId}
+    </update>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuyDTO">
+        UPDATE
+            TOKEN_BUY
+        SET
+            P_BUY_ID = #{pBuyId}
+            , CLIENT_ID = #{clientId}
+            , BUY_TYPE = #{buyType}
+            , SYMBOL = #{symbol}
+            , VIEW_ROLE = #{viewRole}
+            , BUYER_WALLET_ADDRESS = #{buyerWalletAddress}
+            , QUANTITY = #{quantity}
+            , UNIT_PRICE = #{unitPrice}
+            , TOTAL_PRICE = #{totalPrice}
+            , STATE = #{state}
+            , DEL_YN = #{delYn}
+            , TRADE_COMPLETION_DATE = NOW()
+        WHERE
+            BUY_ID = #{buyId}
+    </update>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuyDTO" useGeneratedKeys="true" keyProperty="buyId" keyColumn="buy_id">
+        INSERT INTO TOKEN_BUY (P_BUY_ID, CLIENT_ID, BUY_TYPE, SYMBOL, VIEW_ROLE, BUYER_WALLET_ADDRESS, QUANTITY, UNIT_PRICE, TOTAL_PRICE, STATE, DEL_YN, TRADE_COMPLETION_DATE, REG_WALLET_ADDRESS)
+        VALUES (#{pBuyId}, #{clientId}, #{buyType}, #{symbol}, #{viewRole}, #{buyerWalletAddress}, #{quantity}, #{unitPrice}, #{totalPrice}, #{state}, #{delYn}, #{tradeCompletionDate}, #{regWalletAddress})
+    </insert>
+</mapper>

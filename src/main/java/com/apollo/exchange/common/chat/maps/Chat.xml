@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="Chat">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.chat.dto.ChatDTO">
+        INSERT INTO CHAT (CHAT_TYPE, TITLE, FROM_ID, FROM_NAME, TO_ID, TO_NAME,DEL_YN)
+        VALUES ( #{chatType}, #{title}, #{fromId}, #{fromName}, #{toId}, #{toName}, #{delYn})
+
+        <selectKey resultType="Integer" keyProperty="chatId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
+    </insert>
+    <update id="updateOne" parameterType="com.apollo.exchange.common.chat.dto.ChatDTO">
+        UPDATE CHAT
+        SET
+            CHAT_TYPE = #{chatType},
+            TITLE = #{title},
+            FROM_ID = #{fromId},
+            FROM_NAME = #{fromName},
+            TO_ID = #{toId},
+            TO_NAME = #{fromName},
+            DEL_YN = #{delYn}
+        WHERE CHAT_ID = #{chatId}
+    </update>
+    <select id="selectAllChat"
+            resultType="com.apollo.exchange.common.chat.dto.ChatSearchDTO">
+        SELECT
+            C.CHAT_ID
+            , C.CHAT_TYPE
+            , C.TITLE
+            , C.FROM_ID
+            , C.FROM_NAME
+            , C.TO_ID
+            , C.TO_NAME
+            , C.DEL_YN
+            , C.REG_DATE
+            , CL.CHAT_LINE_ID
+            , CL.MESSAGE
+            , CL.CREATE_ID
+            , CL.CHECK_YN
+            , CL.DEL_YN AS DEL_YN_LINE
+            , CL.REG_DATE AS REG_DATE_LINE
+            , U.LOGIN_ID
+            , U.USER_ID
+        FROM CHAT C
+            LEFT JOIN CHAT_LINE CL ON C.CHAT_ID = CL.CHAT_ID
+            LEFT JOIN USER U ON U.USER_ID = C.TO_ID
+        WHERE C.DEL_YN = 'N'
+        <if test="currentUserId != null &amp;&amp; currentUserId !=''">
+            AND (C.FROM_ID = #{currentUserId} OR C.TO_ID = #{currentUserId})
+        </if>
+        <if test="groupBy != null &amp;&amp; groupBy !=''">
+            GROUP BY ${groupBy}
+        </if>
+        <choose>
+            <when test="orderByColumn != null &amp;&amp; orderByColumn != ''">
+                ORDER BY ${orderByColumn} ${orderByType}
+            </when>
+            <otherwise>
+                ORDER BY REG_DATE_LINE ASC
+            </otherwise>
+        </choose>
+
+        LIMIT #{start}, #{limit}
+    </select>
+</mapper>

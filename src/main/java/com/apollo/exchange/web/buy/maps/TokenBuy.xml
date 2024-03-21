@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TokenBuy">
+    <select id="selectCount" parameterType="com.apollo.exchange.web.buy.dto.BuySearchDTO"
+            resultType="java.lang.Integer">
+
+        SELECT
+            COUNT(*)
+        FROM
+            TOKEN_BUY TB
+            LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH
+            ON TB.BUY_ID = TBTH.BUY_ID
+            INNER JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+        WHERE
+            TB.DEL_YN = 'N'
+            AND TB.STATE != 5
+        <if test="clientTraderUseYn != null &amp;&amp; clientTraderUseYn !=''"> AND C.CLIENT_TRADER_USE_YN = '${clientTraderUseYn}' </if>
+
+        <if test="clientId != null &amp;&amp; clientId !=''">
+            AND TB.CLIENT_ID = #{clientId}
+        </if>
+
+        <if test="symbol != null &amp;&amp; symbol !=''">
+            AND TB.SYMBOL = #{symbol}
+        </if>
+
+        <choose>
+            <when test="buyTypes != null &amp;&amp; buyType == null">
+                AND (
+                TB.BUY_TYPE IN
+                <foreach item="item" index="index" collection="buyTypes" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                <if test="walletAddress != null &amp;&amp; walletAddress != '' &amp;&amp; owner == null &amp;&amp; owner == ''  " >
+                    OR (BUYER_WALLET_ADDRESS =
+                    #{walletAddress} OR SELLER_WALLET_ADDRESS = #{walletAddress})
+                </if>
+                <if test="walletAddress != null &amp;&amp; walletAddress != '' &amp;&amp; owner != null &amp;&amp; owner != ''  " >
+                    AND (BUYER_WALLET_ADDRESS =
+                    #{walletAddress} OR SELLER_WALLET_ADDRESS = #{walletAddress})
+                </if>
+                )
+            </when>
+        </choose>
+
+        <if test="buyType != null &amp;&amp; buyType !=''">
+            AND TB.BUY_TYPE = #{buyType}
+        </if>
+
+        <if test="viewRole != null &amp;&amp; viewRole !=''">
+            AND TB.VIEW_ROLE = #{viewRole}
+        </if>
+
+        <if test="state != null &amp;&amp; state !=''">
+            AND TB.STATE = #{state}
+        </if>
+
+        <if test="idOrderStatus != null &amp;&amp; idOrderStatus !=''">
+            AND TB.STATE = #{idOrderStatus}
+        </if>
+
+        <if test="startDateSearch != null &amp;&amp; startDateSearch !=''">
+            <![CDATA[
+                    AND TB.REG_DATE >= #{startDateSearch}
+                ]]>
+        </if>
+
+        <if test="endDateSearch != null &amp;&amp; endDateSearch !=''">
+            <![CDATA[
+                    AND TB.REG_DATE <= #{endDateSearch}
+                ]]>
+        </if>
+
+    </select>
+
+    <select id="selectTokenBuyHistory" parameterType="com.apollo.exchange.web.buy.dto.BuySearchDTO"
+            resultType="com.apollo.exchange.web.buy.dto.BuySearchDTO">
+
+        SELECT
+            TB.BUY_ID
+            , TB.CLIENT_ID
+            , TB.P_BUY_ID
+            , TB.BUY_TYPE
+            , TB.SYMBOL
+            , TB.VIEW_ROLE
+            , TB.BUYER_WALLET_ADDRESS
+            , TB.QUANTITY
+            , TB.UNIT_PRICE
+            , TB.TOTAL_PRICE
+            , TB.STATE
+            , CM.CODE_NAME AS STATE_NAME
+            , TB.TRADE_COMPLETION_DATE
+            , TB.REG_DATE AS BUY_REG_DATE
+            , TB.REG_WALLET_ADDRESS
+            , TBTH.BUY_TRADE_HISTORY_ID
+            , TBTH.TRADE_STATE
+            , TBTH.TXID
+            , TBTH.SELLER_WALLET_ADDRESS
+            , TBTH.BANK_NAME
+            , TBTH.BANK_OWNER
+            , TBTH.BANK_ACCOUNT
+            , TBTH.REG_DATE AS TRADE_REG_DATE
+            , ROW_NUMBER() OVER(ORDER BY TB.REG_DATE DESC) AS ROW_NUM
+        FROM
+            TOKEN_BUY TB
+            LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH
+                ON TB.BUY_ID = TBTH.BUY_ID
+            LEFT JOIN COMMON_CODE CM
+                ON CM.GROUP_NAME = 'STATE'
+                AND CODE_VALUE = TB.STATE
+                AND LANG_CODE = #{langCode}
+            INNER JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+        WHERE
+            TB.DEL_YN = 'N'
+            AND TB.STATE != 5
+            AND (TBTH.TRADE_STATE IS NULL OR TBTH.TRADE_STATE NOT IN(5))
+
+            <if test="clientTraderUseYn != null &amp;&amp; clientTraderUseYn !=''"> AND C.CLIENT_TRADER_USE_YN = '${clientTraderUseYn}' </if>
+            <if test="clientId != null &amp;&amp; clientId !=''">
+                AND TB.CLIENT_ID = #{clientId}
+            </if>
+
+            <if test="symbol != null &amp;&amp; symbol !=''">
+                AND TB.SYMBOL = #{symbol}
+            </if>
+            <if test="symbolList != null">
+                AND (
+                TB.SYMBOL IN
+                <foreach item="item" index="index" collection="symbolList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                )
+            </if>
+
+            <choose>
+                <when test="buyTypes != null &amp;&amp; buyType == null">
+                    AND (
+                    TB.BUY_TYPE IN
+                    <foreach item="item" index="index" collection="buyTypes" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    <if test="walletAddress != null &amp;&amp; walletAddress != '' &amp;&amp; owner == null &amp;&amp; owner == ''  " >
+                        OR (BUYER_WALLET_ADDRESS = #{walletAddress}
+                            OR SELLER_WALLET_ADDRESS = #{walletAddress}
+                            OR REG_WALLET_ADDRESS = #{walletAddress}
+                        )
+                    </if>
+                    <if test="walletAddress != null &amp;&amp; walletAddress != '' &amp;&amp; owner != null &amp;&amp; owner != ''  " >
+                        AND (
+                            BUYER_WALLET_ADDRESS = #{walletAddress}
+                            OR SELLER_WALLET_ADDRESS = #{walletAddress}
+                            OR REG_WALLET_ADDRESS = #{walletAddress}
+                        )
+                    </if>
+                    )
+                </when>
+            </choose>
+
+            <if test="buyType != null &amp;&amp; buyType !=''">
+                AND TB.BUY_TYPE = #{buyType}
+            </if>
+
+            <if test="viewRole != null &amp;&amp; viewRole !=''"> AND TB.VIEW_ROLE = #{viewRole} </if>
+            <if test="viewRoles != null">
+                AND TB.VIEW_ROLE IN
+                <foreach item="item" index="index" collection="viewRoles" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="state != null &amp;&amp; state !=''">
+                AND TB.STATE = #{state}
+            </if>
+
+            <if test="idOrderStatus != null &amp;&amp; idOrderStatus !=''">
+                AND TB.STATE = #{idOrderStatus}
+            </if>
+
+            <!--FOR TRADER ALARM-->
+        <if test="alarmRole != null">
+            AND REG_WALLET_ADDRESS != #{walletAddress}
+        </if>
+
+
+            <if test="startDateSearch != null &amp;&amp; startDateSearch !=''">
+                <![CDATA[
+                        AND TB.REG_DATE >= #{startDateSearch}
+                    ]]>
+            </if>
+
+            <if test="endDateSearch != null &amp;&amp; endDateSearch !=''">
+                <![CDATA[
+                        AND TB.REG_DATE <= #{endDateSearch}
+                    ]]>
+            </if>
+
+            <choose>
+                <when test="orderByColumn != null &amp;&amp; orderByColumn != ''">
+                    ORDER BY ${orderByColumn} ${orderByType}
+                </when>
+                <otherwise>
+                    ORDER BY TB.REG_DATE DESC
+                </otherwise>
+            </choose>
+
+        LIMIT #{start}, #{limit}
+    </select>
+
+    <select id="selectOneBuyId" parameterType="com.apollo.exchange.web.buy.dto.BuySearchDTO" resultType="com.apollo.exchange.web.buy.dto.BuySearchDTO">
+
+        SELECT
+            TB.BUY_ID
+            , TB.CLIENT_ID
+            , TB.P_BUY_ID
+            , TB.BUY_TYPE
+            , TB.SYMBOL
+            , TB.VIEW_ROLE
+            , TB.BUYER_WALLET_ADDRESS
+            , TB.QUANTITY
+            , TB.UNIT_PRICE
+            , TB.TOTAL_PRICE
+            , TB.STATE
+            , TB.DEL_YN
+            , CM.CODE_NAME AS STATE_NAME
+            , TB.TRADE_COMPLETION_DATE
+            , TB.REG_DATE AS BUY_REG_DATE
+            , TB.REG_WALLET_ADDRESS
+            , TBTH.BUY_TRADE_HISTORY_ID
+            , TBTH.TRADE_STATE
+            , TBTH.TXID
+            , TBTH.SELLER_WALLET_ADDRESS
+            , TBTH.BANK_NAME
+            , TBTH.BANK_OWNER
+            , TBTH.BANK_ACCOUNT
+            , TBTH.REG_DATE AS TRADE_REG_DATE
+        FROM
+            TOKEN_BUY TB
+            LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH
+                ON TB.BUY_ID = TBTH.BUY_ID
+                AND TBTH.TRADE_STATE != 5
+
+            LEFT JOIN COMMON_CODE CM ON CM.GROUP_NAME = 'STATE' AND CODE_VALUE = TB.STATE AND LANG_CODE = #{langCode}
+        WHERE
+            TB.BUY_ID = #{buyId} AND TB.DEL_YN = 'N'
+
+            <if test="clientId != null &amp;&amp; clientId !=''">
+                AND TB.CLIENT_ID = #{clientId}
+            </if>
+
+            <if test="symbol != null &amp;&amp; symbol !=''">
+                AND TB.SYMBOL = #{symbol}
+            </if>
+
+            <if test="buyType != null &amp;&amp; buyType !=''">
+                AND TB.BUY_TYPE = #{buyType}
+            </if>
+
+            <if test="state != null &amp;&amp; state !=''">
+                AND TB.STATE = #{state}
+            </if>
+
+            <if test="idOrderStatus != null &amp;&amp; idOrderStatus !=''">
+                AND TB.STATE = #{idOrderStatus}
+            </if>
+    </select>
+    <select id="selectByPBuyId" parameterType="java.lang.Integer" resultType="com.apollo.exchange.web.buy.dto.BuySearchDTO">
+        SELECT
+            TB.BUY_ID
+            , TB.CLIENT_ID
+            , TB.P_BUY_ID
+            , TB.BUY_TYPE
+            , TB.SYMBOL
+            , TB.VIEW_ROLE
+            , TB.BUYER_WALLET_ADDRESS
+            , TB.QUANTITY
+            , TB.UNIT_PRICE
+            , TB.TOTAL_PRICE
+            , TB.STATE
+            , TB.DEL_YN
+            , CM.CODE_NAME AS STATE_NAME
+            , TB.TRADE_COMPLETION_DATE
+            , TB.REG_DATE AS BUY_REG_DATE
+            , TB.REG_WALLET_ADDRESS
+            , TBTH.BUY_TRADE_HISTORY_ID
+            , TBTH.TRADE_STATE
+            , TBTH.TXID
+            , TBTH.SELLER_WALLET_ADDRESS
+            , TBTH.BANK_NAME
+            , TBTH.BANK_OWNER
+            , TBTH.BANK_ACCOUNT
+            , TBTH.REG_DATE AS TRADE_REG_DATE
+        FROM
+        TOKEN_BUY TB
+        LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH ON TB.BUY_ID = TBTH.BUY_ID
+        LEFT JOIN COMMON_CODE CM ON CM.GROUP_NAME = 'STATE' AND CODE_VALUE = TB.STATE AND LANG_CODE = #{langCode}
+        WHERE TB.P_BUY_ID = #{pBuyId}
+    </select>
+    <insert id="insertOne" parameterType="com.apollo.exchange.web.buy.dto.BuyDTO">
+
+        <![CDATA[
+        INSERT INTO TOKEN_BUY
+        (
+            P_BUY_ID
+            , CLIENT_ID
+            , BUY_TYPE
+            , SYMBOL
+            , VIEW_ROLE
+            , BUYER_WALLET_ADDRESS
+            , QUANTITY
+            , UNIT_PRICE
+            , TOTAL_PRICE
+            , STATE
+            , REG_WALLET_ADDRESS
+            , DEL_YN
+        )
+        VALUES
+        (
+            #{pBuyId}
+            , #{clientId}
+            , #{buyType}
+            , #{symbol}
+            , #{viewRole}
+            , #{buyerWalletAddress}
+            , #{quantity}
+            , #{unitPrice}
+            , #{totalPrice}
+            , #{state}
+            , #{regWalletAddress}
+            , 'N'
+        )
+        ]]>
+        <selectKey resultType="Int" keyProperty="buyId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <update id="updateOne" parameterType="com.apollo.exchange.web.buy.dto.BuySearchDTO">
+
+        UPDATE TOKEN_BUY
+            SET
+                P_BUY_ID = #{pBuyId}
+                , CLIENT_ID = #{clientId}
+                , BUY_TYPE = #{buyType}
+                , SYMBOL = #{symbol}
+                , VIEW_ROLE = #{viewRole}
+                , BUYER_WALLET_ADDRESS = #{buyerWalletAddress}
+                , QUANTITY = #{quantity}
+                , UNIT_PRICE = #{unitPrice}
+                , TOTAL_PRICE = #{totalPrice}
+                , STATE = #{state}
+                , DEL_YN = #{delYn}
+
+            WHERE BUY_ID = #{buyId}
+    </update>
+
+
+    <update id="updateStateByIds" parameterType="com.apollo.exchange.web.buy.dto.BuySearchDTO">
+        UPDATE TOKEN_BUY
+            SET
+                STATE = #{state}
+            WHERE
+                BUY_ID IN
+                    <foreach item="item" index="index" collection="buyIds" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+    </update>
+</mapper>

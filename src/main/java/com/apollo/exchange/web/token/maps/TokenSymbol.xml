@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="TokenSymbol">
+
+    <!-- 토큰 리스트 카운트. -->
+    <select id="selectCount" parameterType="com.apollo.exchange.web.token.dto.TokenSearchDTO" resultType="int">
+        <![CDATA[
+            SELECT
+                COUNT(T.SYMBOL)
+            FROM TOKEN T
+                     LEFT JOIN WALLET W ON T.SYMBOL = W.SYMBOL
+                     LEFT JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+            WHERE WR.ROLE = 'OPERATOR'
+        ]]>
+    </select>
+
+    <!-- 토큰 리스트 가져오기. -->
+    <select id="selectTokenList"  resultType="com.apollo.exchange.web.token.dto.TokenDTO">
+        <![CDATA[
+            SELECT *
+            FROM (
+                 SELECT
+                    @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                    , A.*
+                 FROM (
+                     SELECT
+                         T.SYMBOL
+                         , T.NAME
+                         , T.OPERATOR
+                         , T.UNIT_PRICE
+                         , T.USE_YN
+                         , T.REG_DATE
+                         , W.WALLET_ADDRESS
+                         , W.FEE
+                         , WR.ROLE
+                     FROM TOKEN T
+                     LEFT JOIN WALLET W ON T.SYMBOL = W.SYMBOL
+                     LEFT JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+                     WHERE WR.ROLE = 'OPERATOR' AND T.USE_YN = 'Y'
+                 ) A, (SELECT @ROWNUM :=0) TEMP
+                 ORDER BY ROWNUM DESC
+                 LIMIT 0, 10
+             ) RESULT
+        ]]>
+    </select>
+    <select id="selectByOperator" parameterType="com.apollo.exchange.web.token.dto.TokenSearchDTO" resultType="com.apollo.exchange.web.token.dto.TokenDTO">
+
+             SELECT
+        T.SYMBOL
+        , T.NAME
+        , T.OPERATOR
+        , T.UNIT_PRICE
+        , T.USE_YN
+        , T.REG_DATE
+        FROM TOKEN T
+        LEFT JOIN WALLET W ON T.SYMBOL = W.SYMBOL
+        LEFT JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+        WHERE WR.ROLE = 'OPERATOR' AND T.USE_YN = 'Y'
+        AND
+        T.OPERATOR IN
+                    <foreach item="item" index="index" collection="operatorList" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+
+
+    </select>
+
+
+    <!-- 토큰 상세 가져오기. -->
+    <select id="selectOne" parameterType="com.apollo.exchange.web.token.dto.TokenSearchDTO" resultType="com.apollo.exchange.web.token.dto.TokenDTO">
+        <![CDATA[
+            SELECT
+                T.SYMBOL
+                 , T.NAME
+                 , T.OPERATOR
+                 , T.UNIT_PRICE
+                 , T.USE_YN
+                 , T.REG_DATE
+                 , W.WALLET_ADDRESS
+                 , W.FEE
+                 , WR.ROLE
+            FROM TOKEN T
+                     LEFT JOIN WALLET W ON T.SYMBOL = W.SYMBOL
+                     LEFT JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+            WHERE WR.ROLE = 'OPERATOR'
+            AND T.SYMBOL = '${symbol}'
+
+        ]]>
+    </select>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminTransferHistory">
+
+    <!-- 토큰 리스트 카운트. -->
+    <select id="selectCount" parameterType="com.apollo.exchange.admin.transferHistory.dto.AdminTransferHistorySearchDTO" resultType="int">
+        SELECT COUNT(TH.TRANSFER_HISTORY_ID)
+        FROM TRANSFER_HISTORY TH
+        WHERE 1
+        <if test="fromWalletAddress != null &amp;&amp; fromWalletAddress !=''"> AND TH.FROM_WALLET_ADDRESS = #{fromWalletAddress} </if>
+        <if test="toWalletAddress != null &amp;&amp; toWalletAddress !=''"> AND TH.TO_WALLET_ADDRESS = #{toWalletAddress} </if>
+        <if test="walletAddress != null &amp;&amp; walletAddress !=''"> AND (TH.TO_WALLET_ADDRESS = #{walletAddress} OR TH.FROM_WALLET_ADDRESS = #{walletAddress}) </if>
+        <if test="transferFromType != null &amp;&amp; transferFromType !=''"> AND TH.TRANSFER_FROM_TYPE = #{transferFromType} </if>
+        <if test="transferToType != null &amp;&amp; transferToType !=''"> AND TH.TRANSFER_TO_TYPE = #{transferToType} </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND CLIENT_CODE = #{clientCode} </if>
+        <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+            <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+            </if>
+            <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+            </if>
+        </if>
+    </select>
+
+    <select id="selectList" parameterType="com.apollo.exchange.admin.transferHistory.dto.AdminTransferHistorySearchDTO" resultType="com.apollo.exchange.admin.transferHistory.dto.AdminTransferHistoryDTO">
+        SELECT *
+        FROM (
+            SELECT
+                @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                , A.*
+            FROM (
+                SELECT
+                    TH.TRANSFER_HISTORY_ID
+                    , TH.TRANSFER_FROM_TYPE
+                    , TH.TRANSFER_TO_TYPE
+                    , TH.SYMBOL
+                    , TH.CLIENT_CODE
+                    , TH.TXID
+                    , TH.STATE
+                    , TH.TO_WALLET_ADDRESS
+                    , TH.FROM_WALLET_ADDRESS
+                    , TH.QUANTITY
+                    , TH.REG_DATE
+                FROM
+                    TRANSFER_HISTORY TH
+                WHERE 1
+                <if test="fromWalletAddress != null &amp;&amp; fromWalletAddress !='' "> AND TH.FROM_WALLET_ADDRESS = #{fromWalletAddress} </if>
+                <if test="toWalletAddress != null &amp;&amp; toWalletAddress !=''"> AND TH.TO_WALLET_ADDRESS = #{toWalletAddress} </if>
+                <if test="walletAddress != null &amp;&amp; walletAddress !='' "> AND (TH.TO_WALLET_ADDRESS = #{walletAddress} OR TH.FROM_WALLET_ADDRESS = #{walletAddress}) </if>
+                <if test="transferFromType != null &amp;&amp; transferFromType !='' "> AND TRANSFER_FROM_TYPE = #{transferFromType} </if>
+                <if test="transferToType != null &amp;&amp; transferToType !='' "> AND TRANSFER_TO_TYPE = #{transferToType} </if>
+                <if test="clientCode != null &amp;&amp; clientCode !='' "> AND CLIENT_CODE = #{clientCode} </if>
+                <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+                    <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                        <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+                    </if>
+                    <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                        <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+                    </if>
+                </if>
+            ) A, (SELECT @ROWNUM :=0) TEMP
+            <if test="orderByColumn != null &amp;&amp; orderByColumn !=''">
+                ORDER BY ${orderByColumn} ${orderByType}
+            </if>
+            LIMIT ${start}, ${limit}
+        ) RESULT
+    </select>
+</mapper>

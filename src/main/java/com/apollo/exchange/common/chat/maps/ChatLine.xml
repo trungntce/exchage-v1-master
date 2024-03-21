@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="ChatLine">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.chat.dto.ChatLineDTO">
+        INSERT INTO CHAT_LINE
+        (CHAT_ID, MESSAGE, CREATE_ID, CHECK_YN, DEL_YN)
+        VALUES (#{chatId}, #{message}, #{createId}, #{checkYn}, #{delYn})
+
+        <selectKey resultType="Integer" keyProperty="chatLineId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
+    </insert>
+    <update id="updateOne" parameterType="com.apollo.exchange.common.chat.dto.ChatLineDTO">
+        UPDATE CHAT_LINE
+        SET
+            CHAT_ID = #{chatId}, MESSAGE = #{message}, CREATE_ID = #{createId}, CHECK_YN = #{checkYn}, DEL_YN = #{delYn}
+        WHERE CHAT_LINE_ID = #{chatLineId}
+    </update>
+
+    <update id="updateCheckYn" parameterType="com.apollo.exchange.common.chat.dto.ChatLineDTO">
+        UPDATE CHAT_LINE
+        SET
+        CHECK_YN = #{checkYn}
+        WHERE CHAT_LINE_ID = #{chatLineId}
+    </update>
+</mapper>

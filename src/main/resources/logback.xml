@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>{%-5p} [%d] &lt;%c.%M&gt; : %m%n %ex</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="logfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>/home/apollo/web/logs/apollo-exchange/apollo-exchange.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/home/apollo/web/logs/apollo-exchange/%d{yyyy-MM-dd}_apollo-exchange.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 50MB -->
+				<maxFileSize>200MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>100</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>{%-5p} [%d] &lt;%c.%M&gt; : %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.springframework">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="org.apache.catalina">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.apache.http">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.apache.commons">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.apache.tiles">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="org.mybatis">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="java.sql">
+		<level value="DEBUG" />
+	</logger>
+
+	<logger name="_org.springframework.web.servlet.HandlerMapping">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="DynamicTilesView">
+		<level value="INFO" />
+	</logger>
+
+	<logger name="com.amazonaws">
+		<level value="INFO" />
+	</logger>
+
+	<root level="DEBUG">
+		<appender-ref ref="console" />
+		<appender-ref ref="logfile" />
+	</root>
+
+</configuration>

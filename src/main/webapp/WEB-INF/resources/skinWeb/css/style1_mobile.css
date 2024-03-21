@@ -1,0 +1,184 @@
+
+@media screen and (max-width:768px) {
+* {
+    font-size: 9pt;
+
+
+
+}
+    /* 2023.02.06 add */
+    .member-menu__pop2 a {margin-right:5px;}
+    .member-menu__pop2 a i.bi-coin {font-size:11pt;vertical-align:middle;}
+    .top_count_token {font-size:11pt;}
+
+
+img{
+    width: 100%;
+}
+div.container {
+    padding: 0 10px !important;
+}
+.tabs ul {
+	display: block;
+}
+.article-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.6rem;
+}
+    .trade-pop-form-info-item {
+        position: relative;
+        display: flex  !important;
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        overflow: hidden;
+        border-bottom: 1px #ccc solid;
+        padding: 0px !important;
+        grid-template-columns:  none !important;
+    }
+    .trade-pop-form-info-item dd{
+           position: relative;
+           /* width: 50% !important; */
+           width: 68% !important;
+           height: 100%;
+           padding: 0 20px;
+           color: #333;
+           float: left;
+        }
+
+        .trade-pop-form-info-item dt{
+            /* width: 50% !important; */
+            width: 30% !important;
+            padding:0 10px;
+        }
+    .sub-title {
+        /*display: none;*/
+    }
+    .sub-snb-wrap {
+        padding: 10px;
+    }
+
+    .sub-snb-menu {
+        width: 100%;
+        overflow: hidden;
+    }
+    .sub-snb-menu .sub-snb-menu-item {width:49%;box-sizing:border-box;text-align:center;}
+    .sub-snb-menu .sub-snb-menu-item.active {
+        font-weight: 500;
+        background: #f6465d;
+        color: #fff;
+        box-shadow: 1px 0px 4px #00000040;
+    }
+    .trade-list-wrap {
+        /*border-top: 1px #d9d9d9 solid;*/
+    }
+    .trade-list-wrap {
+        position: relative;
+        width: 100%;
+    }
+
+.login-btn {
+    display: none !important;
+}
+#alarm-web {
+    display: none !important;
+}
+.logout-web {
+ display: none !important;   
+}
+.footer__sns {padding-top:0.5rem;}
+.trade__control__inner button.btn-secondary {margin:0 auto;}
+.refresh-btn {margin:0 auto;}
+.sub-snb-btn {text-align:center;}
+.list-select {width:100%;float:none;}
+.refresh-btn{float:none!important;}
+.gallery-view__cont p.text-center {text-align:left!important;}
+.gallery-view-wrap .btn-box {margin:2rem 0;}
+.faq__sidebar ul {padding-bottom:0;}
+.faq__head {margin-bottom:2rem;}
+.faq__sidebar li a {padding:0.6rem 1rem;}
+.faq__accordion-list dt b {font-size:1.5rem;font-weight:500;}
+.faq__accordion-list dd
+.faq__cont dt {margin-bottom:1rem;}
+.faq__cont dd {margin-bottom:1.5rem;}
+.faq__cont dd li {padding:0 1.4rem;}
+.trade-pop-form-info-item dt, .trade-pop-form-info-item dd {padding:0 10px!important;}
+.trade-pop-form-info-item dd input:not([type="radio"])
+{
+    position: relative;
+    top:-3px;
+    z-index: 2;
+	width: 100%;
+	/* height: 100%; */
+	height: auto;
+	padding: 0.5rem;
+	-webkit-appearance: none;  /* 네이티브 외형 감추기 */
+	-moz-appearance: none;
+	appearance: none;
+	border: 1px #b17acc solid;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 1.4rem;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+}
+.trade-pop-form-info-item dd input:hover {
+	border: 1px #639bf7 solid;
+}
+.submit_btn {text-align:center;}
+.status-btn.status-ing.submit_btn {width:30%;}
+.sub-snb-menu .sub-snb-menu-item {padding}
+.trade__cont .justify-content-end .order-status {margin-right:0!important;}
+
+
+}
+
+
+.space-mobile{
+  display: none;
+}
+@media (max-width: 690px){
+  .space-mobile{
+    display: block;
+  }
+}
+
+@media (min-width: 700px) and (max-width: 1024px){
+    .member-menu__pop{
+        top: 15rem;
+    }
+}
+
+@media (max-width:  600px){
+    .member-menu__pop{
+        /* top: 19rem; */
+        top: 24rem;
+    }
+}
+
+
+@media (max-width:1024px){
+    /* 메인 */
+    .main-portfolio, .main-explore, .main-app {margin:4rem 0;}
+    footer {padding:1rem 0;}
+    .footer__inner {padding:2rem 1.6rem;}
+
+    /* 페이징 */
+    .pagination {--bs-pagination-padding-x:0.8rem;--bs-pagination-padding-y:0.8rem}
+}
+.width-100{
+    width: 100% !important;
+}
+.fix-height-110{
+    height: 110px !important;
+}
+
+.headerChat{
+    position: sticky !important;
+    top: 0 !important;
+}
+.btnChatClose:hover{
+     background-color: #f5f5f5 !important;
+}

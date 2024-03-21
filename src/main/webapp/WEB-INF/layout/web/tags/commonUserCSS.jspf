@@ -1,0 +1,12 @@
+
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/css/web/plugins.css">
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/css/web/theme-styles.css">
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/css/web/blocks.css">
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/css/web/widgets.css">
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/css/web/font-awesome.css">
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/css/web/custom/style.css">
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/js/plugins/fullpage/dist/fullpage.css">
+<link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700i,900," rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="${_ctx}/resources/js/plugins/fullpage/dist/fullpage.css">
+<!--Styles for RTL-->
+<!--<link rel="stylesheet" type="text/css" href="${_ctx}/resources/css/web/rtl.css">-->

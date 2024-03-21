@@ -1,0 +1,58 @@
+<!-- ================== BEGIN core-js ================== -->
+<script src="${_ctx}/resources/colorAdmin/js/vendor.min.js"></script>
+<script src="${_ctx}/resources/colorAdmin/js/app.min.js"></script>
+<!-- ================== END core-js ================== -->
+
+<!-- ================== BEGIN page-js ================== -->
+<script src="${_ctx}/resources/colorAdmin/plugins/d3/d3.min.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/nvd3/build/nv.d3.min.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/gritter/js/jquery.gritter.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/gritter/js/jquery.gritter.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.canvaswrapper.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.colorhelpers.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.saturated.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.browser.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.drawSeries.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.uiConstants.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.time.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.resize.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.pie.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.crosshair.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.categories.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.navigate.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.touchNavigate.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.hover.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.touch.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.selection.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.symbol.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/flot/source/jquery.flot.legend.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/jvectormap-next/jquery-jvectormap.min.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/jvectormap-next/jquery-jvectormap-world-mill.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+<script src="${_ctx}/resources/colorAdmin/plugins/select2/dist/js/select2.js"></script>
+<script type="text/javascript" src="${_ctx}/resources/colorAdmin/plugins/moment/min/moment.min.js"></script>
+<script type="text/javascript" src="${_ctx}/resources/colorAdmin/plugins/moment/min/moment-with-locales.js"></script>
+<script type="text/javascript" src="${_ctx}/resources/colorAdmin/plugins/@fullcalendar/core/main.global.js"></script>
+<script type="text/javascript" src="${_ctx}/resources/colorAdmin/plugins/@fullcalendar/daygrid/main.global.js"></script>
+<script type="text/javascript" src="${_ctx}/resources/colorAdmin/plugins/@fullcalendar/bootstrap/main.global.js"></script>
+<!-- <script type="text/javascript" src="${_ctx}/resources/colorAdmin/plugins/bootstrapdaterangepicker-/daterangepicker.js"></script> -->
+
+<script src="${_ctx}/resources/js/plugins/web3/web3.min.js"></script>
+<script src="${_ctx}/resources/js/plugins/clipboard/clipboard.js"></script>
+<script src="${_ctx}/resources/js/common.js"></script>
+<script src="${_ctx}/resources/js/validator.js"></script>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/pace.min.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/jquery.min.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/jquery-ui.min.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/bootstrap.bundle.min.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/jquery.slimscroll.min.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/js.cookie.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/app.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/theme/default.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/common.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/prototype.js"></script>--%>
+
+<%--<script src="${_ctx}/resources/js/ajax-common.js"></script>--%>
+<%--<script type="text/javascript" src="${_ctx}/resources/js/plugins/bootstrap-select/dist/js/bootstrap-select.min.js"></script>--%>

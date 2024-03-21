@@ -1,0 +1,33 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: dongwon
+  Date: 2022-09-01
+  Time: 오후 2:45
+  To change this template use File | Settings | File Templates.
+--%>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+<!-- ================== BEGIN core-css ================== -->
+<link href="${_ctx}/resources/colorAdmin/css/vendor.min.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/css/default/app.min.css" rel="stylesheet" />
+<!-- ================== END core-css ================== -->
+
+<!-- ================== BEGIN page-css ================== -->
+<link href="${_ctx}/resources/colorAdmin/plugins/jvectormap-next/jquery-jvectormap.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/nvd3/build/nv.d3.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" />
+<!-- ================== END page-css ================== -->
+
+<link href="${_ctx}/resources/colorAdmin/plugins/@fullcalendar/common/main.min.css" rel="stylesheet"  />
+<link href="${_ctx}/resources/colorAdmin/plugins/@fullcalendar/daygrid/main.min.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/@fullcalendar/list/main.min.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/@fullcalendar/bootstrap/main.min.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/select2/dist/css/select2.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+<link href="${_ctx}/resources/colorAdmin/plugins/flag-icon-css/css/flag-icons.min.css" rel="stylesheet" />
+<link href="${_ctx}/resources/css/admin/your_style.css" rel="stylesheet" />
+<link href="${_ctx}/resources/css/validator.css" rel="stylesheet" />
+
+

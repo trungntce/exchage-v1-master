@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminBuyMyTrade">
+
+    <!-- 토큰 리스트 카운트. -->
+    <select id="count" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuySearchDTO" resultType="int">
+        SELECT COUNT(TB.BUY_ID)
+        FROM TOKEN_BUY TB
+        LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH ON TB.BUY_ID = TBTH.BUY_ID
+        LEFT JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+        WHERE (TBTH.SELLER_WALLET_ADDRESS = #{walletAddress} OR TB.BUYER_WALLET_ADDRESS = #{walletAddress})
+        <if test="keywordType != null &amp;&amp; keywordType !=''"> AND ${keywordType} like '%${keyword}%' </if>
+        <if test="buyType != null &amp;&amp; buyType !=''"> AND BUY_TYPE = #{buyType} </if>
+        <if test="symbol != null &amp;&amp; symbol !=''"> AND C.SYMBOL = #{symbol} </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="symbol != null &amp;&amp; symbol !=''"> AND TB.SYMBOL = '${symbol}' </if>
+        <if test="states != null">
+            AND TB.STATE IN
+            <foreach item="item" index="index" collection="states" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="state != null &amp;&amp; state !=''"> AND TB.STATE = #{state} </if>
+        <if test="viewRole != null &amp;&amp; viewRole !=''"> AND TB.VIEW_ROLE = #{viewRole} </if>
+        <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+            <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+            </if>
+            <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+            </if>
+        </if>
+    </select>
+
+    <!-- 토큰 리스트 가져오기. -->
+    <select id="selectList" parameterType="com.apollo.exchange.admin.buy.dto.AdminBuySearchDTO" resultType="com.apollo.exchange.admin.buy.dto.AdminBuyDTO">
+        <![CDATA[
+            SELECT *
+            FROM (
+                 SELECT
+                     @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                    , A.*
+                 FROM (
+                     SELECT
+                         TB.BUY_ID
+                         , TB.P_BUY_ID
+                         , TB.CLIENT_ID
+                         , (SELECT NAME FROM CLIENT WHERE CLIENT_ID = TB.CLIENT_ID) AS CLIENT_NAME
+                         , TB.BUY_TYPE
+                         , TB.SYMBOL
+                         , TB.VIEW_ROLE
+                         , TB.BUYER_WALLET_ADDRESS
+                         , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TB.BUYER_WALLET_ADDRESS) AS BUYER_NAME
+                         , TB.QUANTITY
+                         , TB.UNIT_PRICE
+                         , TB.TOTAL_PRICE
+                         , TB.STATE
+                         , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'STATE' AND CODE_VALUE=TB.STATE AND LANG_CODE='${langCode}') AS STATE_NAME
+                         , TB.DEL_YN
+                         , TBTH.TRADE_STATE
+                         , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'BUY_TRADE_STATE' AND CODE_VALUE=TBTH.TRADE_STATE AND LANG_CODE='${langCode}') AS TRADE_STATE_NAME
+                         , TBTH.SELLER_WALLET_ADDRESS
+                         , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TBTH.SELLER_WALLET_ADDRESS) AS SELLER_NAME
+                         , TBTH.TXID
+                         , TBTH.BANK_NAME
+                         , TBTH.BANK_OWNER
+                         , TBTH.BANK_ACCOUNT
+                         , TB.TRADE_COMPLETION_DATE
+                         , TB.REG_DATE
+                     FROM
+                        TOKEN_BUY TB
+                        LEFT JOIN TOKEN_BUY_TRADE_HISTORY TBTH ON TB.BUY_ID = TBTH.BUY_ID
+                        LEFT JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+                     WHERE (TBTH.SELLER_WALLET_ADDRESS = #{walletAddress} OR TB.BUYER_WALLET_ADDRESS = #{walletAddress})
+        ]]>
+                    <if test="keywordType != null &amp;&amp; keywordType !=''"> AND ${keywordType} like '%${keyword}%' </if>
+                    <if test="buyType != null &amp;&amp; buyType !=''"> AND BUY_TYPE = #{buyType} </if>
+                    <if test="symbol != null &amp;&amp; symbol !=''"> AND C.SYMBOL = #{symbol} </if>
+                    <if test="states != null">
+                        AND TB.STATE IN
+                        <foreach item="item" index="index" collection="states" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </if>
+                    <if test="state != null &amp;&amp; state !=''"> AND TB.STATE = #{state} </if>
+                    <if test="viewRole != null &amp;&amp; viewRole !=''"> AND TB.VIEW_ROLE = #{viewRole} </if>
+                    <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+                    <if test="symbol != null &amp;&amp; symbol !=''"> AND TB.SYMBOL = '${symbol}' </if>
+                    <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+                        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                            <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+                        </if>
+                        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                            <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+                        </if>
+                    </if>
+        <![CDATA[
+                 ) A, (SELECT @ROWNUM :=0) TEMP
+        ]]>
+        <if test="orderByColumn != null &amp;&amp; orderByColumn !=''">
+            ORDER BY ${orderByColumn} ${orderByType}
+        </if>
+        <![CDATA[
+                 LIMIT ${start}, ${limit}
+             ) RESULT
+        ]]>
+    </select>
+
+</mapper>

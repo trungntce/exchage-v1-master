@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminWalletClientTrader">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletClientTraderDTO">
+        INSERT INTO WALLET_CLIENT_TRADER (SYMBOL, WALLET_ID, CLIENT_ID)
+        VALUES
+        (#{symbol}, #{walletId}, #{clientId})
+    </insert>
+</mapper>

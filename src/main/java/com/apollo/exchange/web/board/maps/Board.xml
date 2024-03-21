@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Board">
+    <select id="selectCount" parameterType="com.apollo.exchange.web.board.dto.BoardSearchDTO"
+            resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            BOARD B
+        WHERE B.BOARD_TYPE = #{boardType}
+        AND B.LANG_CODE = #{langCode}
+        AND B.FAQ_TITLE_YN = 'N'
+        <if test="keyword != null &amp;&amp; keyword !=''"> AND ${searchType} like '%${keyword}%' </if>
+    </select>
+
+    <select id="selectBoardTitleList" parameterType="com.apollo.exchange.web.board.dto.BoardSearchDTO"
+            resultType="com.apollo.exchange.web.board.dto.BoardDTO">
+        SELECT
+        *
+        FROM
+        BOARD B
+        WHERE B.BOARD_TYPE = #{boardType}
+        AND B.LANG_CODE = #{langCode}
+        AND B.FAQ_TITLE_YN = 'Y'
+        ORDER BY BOARD_KIND ASC
+    </select>
+
+    <select id="selectBoardList" parameterType="com.apollo.exchange.web.board.dto.BoardSearchDTO"
+            resultType="com.apollo.exchange.web.board.dto.BoardDTO">
+        SELECT
+            *
+        FROM
+            BOARD B
+        WHERE B.BOARD_TYPE = #{boardType}
+        AND B.LANG_CODE = #{langCode}
+        AND B.FAQ_TITLE_YN = 'N'
+
+        <if test="keyword != null &amp;&amp; keyword !=''"> AND ${searchType} like '%${keyword}%' </if>
+        <choose>
+            <when test ="boardType == 0">
+                ORDER BY B.BOARD_ID DESC
+            </when>
+            <otherwise>
+                ORDER BY B.BOARD_KIND ASC, B.SORT ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectBoardDetail" parameterType="com.apollo.exchange.web.board.dto.BoardSearchDTO"
+            resultType="com.apollo.exchange.web.board.dto.BoardDTO">
+    <![CDATA[
+            SELECT
+            *
+            ,(SELECT BOARD_ID FROM BOARD BB WHERE BB.BOARD_ID < #{boardId} AND BB.BOARD_TYPE = #{boardType} AND BB.LANG_CODE = #{langCode} AND BB.USE_YN = 'Y' ORDER BY BB.BOARD_ID DESC LIMIT 1) as prevPage
+            ,(SELECT BOARD_ID FROM BOARD CC WHERE CC.BOARD_ID > #{boardId} AND CC.BOARD_TYPE = #{boardType} AND CC.LANG_CODE = #{langCode} AND CC.USE_YN = 'Y' ORDER BY CC.BOARD_ID LIMIT 1) as nextPage
+            FROM
+            BOARD B
+            WHERE B.BOARD_TYPE = #{boardType}
+            AND B.LANG_CODE = #{langCode}
+            AND B.FAQ_TITLE_YN = 'N'
+            AND B.BOARD_ID = #{boardId}
+    ]]>
+    </select>
+</mapper>

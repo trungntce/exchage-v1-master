@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="Analysis">
+    <!-- 구매통계 리스트 가져오기. -->
+    <select id="selectAnalysisList" parameterType="com.apollo.exchange.admin.analysis.dto.AnalysisSearchDTO" resultType="com.apollo.exchange.admin.analysis.dto.AnalysisDTO">
+        SELECT
+            T.SYMBOL
+            , C.NAME AS CLIENT_NAME
+            , W.WALLET_ADDRESS AS WALLET_ADDRESS
+            , ODB.QUANTITY AS BUY_QUANTITY, ODB.TOTAL_PRICE AS BUY_TOTAL_PRICE
+            , ODS.QUANTITY AS SELL_QUANTITY, ODS.TOTAL_PRICE AS SELL_TOTAL_PRICE
+            , SUM(CASE WHEN TH.TRANSFER_FROM_TYPE = 'USER' AND TH.TRANSFER_TO_TYPE = 'VIETKO_FEE' THEN TH.QUANTITY ELSE 0 END) AS TRANSFER_FEE
+            , SUM(CASE WHEN TH.TRANSFER_TO_TYPE = #{role} AND TH.TRANSFER_FROM_TYPE != 'USER' THEN TH.QUANTITY ELSE 0 END) AS BENEFIT_FEE
+        FROM TOKEN T
+        INNER JOIN CLIENT C ON T.SYMBOL = C.SYMBOL
+        INNER JOIN WALLET_CLIENT WC ON C.CLIENT_ID = WC.CLIENT_ID
+        INNER JOIN WALLET W ON WC.WALLET_ID = W.WALLET_ID
+        INNER JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID AND WR.ROLE = 'CLIENT'
+        LEFT JOIN (
+            SELECT CLIENT_ID, SUM(QUANTITY) AS QUANTITY , SUM(TOTAL_PRICE) AS TOTAL_PRICE
+            FROM TOKEN_BUY
+            WHERE VIEW_ROLE IN ('USER', 'API')
+            <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TRADE_COMPLETION_DATE >= #{searchDateStart} ]]></if>
+            <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TRADE_COMPLETION_DATE <= #{searchDateEnd} ]]></if>
+            GROUP BY CLIENT_ID
+        ) AS ODB ON C.CLIENT_ID = ODB.CLIENT_ID
+        LEFT JOIN (
+            SELECT CLIENT_ID, SUM(QUANTITY) AS QUANTITY , SUM(TOTAL_PRICE) AS TOTAL_PRICE
+            FROM TOKEN_SELL
+            WHERE VIEW_ROLE IN ('USER', 'API')
+            <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TRADE_COMPLETION_DATE >= #{searchDateStart} ]]></if>
+            <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TRADE_COMPLETION_DATE <= #{searchDateEnd} ]]></if>
+            GROUP BY CLIENT_ID
+        ) AS ODS ON C.CLIENT_ID = ODS.CLIENT_ID
+        LEFT JOIN TRANSFER_HISTORY TH ON C.CLIENT_CODE = TH.CLIENT_CODE AND TH.TRANSFER_TO_TYPE IN ('OPERATOR_FEE', 'VIETKO_FEE')
+        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TH.REG_DATE >= #{searchDateStart} ]]></if>
+        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TH.REG_DATE <= #{searchDateEnd} ]]></if>
+        WHERE 1
+        <if test="symbol != null &amp;&amp; symbol !=''"> AND T.SYMBOL = #{symbol} </if>
+        <if test="symbols != null">
+            AND T.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="clientId != null &amp;&amp; clientId !=''"> AND C.CLIENT_ID = #{clientId} </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="state != null &amp;&amp; state !=''"> AND TB.STATE = #{state} </if>
+        GROUP BY T.SYMBOL, C.NAME, W.WALLET_ADDRESS
+    </select>
+
+    <select id="selectAnalysisBuyByDay" parameterType="com.apollo.exchange.admin.analysis.dto.AnalysisSearchDTO" resultType="com.apollo.exchange.admin.analysis.dto.AnalysisDTO">
+        SELECT
+            DATE_FORMAT(TB.TRADE_COMPLETION_DATE, "%Y/%m/%d") AS TITLE
+            , TB.SYMBOL
+            , COUNT(TB.BUY_ID) AS TOTAL_ITEM
+            , SUM(TB.QUANTITY) AS TOTAL_QUANTITY
+            , SUM(TB.TOTAL_PRICE) AS TOTAL_PRICE
+        FROM TOKEN_BUY TB
+        INNER JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+        WHERE 1
+        <if test="symbols != null">
+            AND TB.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TB.TRADE_COMPLETION_DATE >= #{searchDateStart} ]]></if>
+        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TB.TRADE_COMPLETION_DATE <= #{searchDateEnd} ]]></if>
+        GROUP BY DATE_FORMAT(TB.TRADE_COMPLETION_DATE, "%Y/%m/%d"), TB.SYMBOL
+    </select>
+
+    <select id="selectAnalysisSellByDay" parameterType="com.apollo.exchange.admin.analysis.dto.AnalysisSearchDTO" resultType="com.apollo.exchange.admin.analysis.dto.AnalysisDTO">
+        SELECT
+            DATE_FORMAT(TS.TRADE_COMPLETION_DATE, "%Y/%m/%d") AS TITLE
+            , TS.SYMBOL
+            , COUNT(TS.SELL_ID) AS TOTAL_ITEM
+            , SUM(TS.QUANTITY) AS TOTAL_QUANTITY
+            , SUM(TS.TOTAL_PRICE) AS TOTAL_PRICE
+        FROM TOKEN_SELL TS
+        INNER JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+        WHERE 1
+        <if test="symbols != null">
+            AND TS.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TS.TRADE_COMPLETION_DATE >= #{searchDateStart} ]]></if>
+        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TS.TRADE_COMPLETION_DATE <= #{searchDateEnd} ]]></if>
+        GROUP BY DATE_FORMAT(TS.TRADE_COMPLETION_DATE, "%Y/%m/%d"), TS.SYMBOL
+    </select>
+
+    <select id="selectSumBuyHomePage" parameterType="com.apollo.exchange.admin.analysis.dto.AnalysisSearchDTO" resultType="com.apollo.exchange.admin.analysis.dto.AnalysisDTO">
+        SELECT SUM(TB.QUANTITY) AS TOTAL_QUANTITY
+        FROM TOKEN_BUY TB
+        INNER JOIN CLIENT C ON TB.CLIENT_ID = C.CLIENT_ID
+        WHERE 1
+        <if test="symbols != null">
+            AND TB.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TB.TRADE_COMPLETION_DATE >= #{searchDateStart} ]]></if>
+        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TB.TRADE_COMPLETION_DATE <= #{searchDateEnd} ]]></if>
+    </select>
+
+    <select id="selectSumSellHomePage" parameterType="com.apollo.exchange.admin.analysis.dto.AnalysisSearchDTO" resultType="com.apollo.exchange.admin.analysis.dto.AnalysisDTO">
+        SELECT
+            SUM(TS.QUANTITY) AS TOTAL_QUANTITY
+            , SUM(TS.TOTAL_PRICE) AS TOTAL_PRICE
+        FROM TOKEN_SELL TS
+        INNER JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+        WHERE 1
+        <if test="symbols != null">
+            AND TS.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TS.TRADE_COMPLETION_DATE >= #{searchDateStart} ]]></if>
+        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TS.TRADE_COMPLETION_DATE <= #{searchDateEnd} ]]></if>
+    </select>
+
+    <select id="selectSumFeeHomePage" parameterType="com.apollo.exchange.admin.analysis.dto.AnalysisSearchDTO" resultType="com.apollo.exchange.admin.analysis.dto.AnalysisDTO">
+        SELECT SUM(CASE WHEN TH.TRANSFER_TO_TYPE = 'OPERATOR_FEE' THEN TH.QUANTITY ELSE 0 END) AS TRANSFER_FEE
+            , SUM(CASE WHEN TH.TRANSFER_TO_TYPE = 'VIETKO_FEE' THEN TH.QUANTITY ELSE 0 END) AS BENEFIT_FEE
+        FROM TRANSFER_HISTORY TH
+        WHERE TH.TRANSFER_TO_TYPE IN ('OPERATOR_FEE', 'VIETKO_FEE')
+        <if test="symbols != null">
+            AND TH.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND TH.CLIENT_CODE = #{clientCode} </if>
+        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND TH.REG_DATE >= #{searchDateStart} ]]></if>
+        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND TH.REG_DATE <= #{searchDateEnd} ]]></if>
+    </select>
+
+    <select id="selectCountWalletHomePage" parameterType="com.apollo.exchange.admin.analysis.dto.AnalysisSearchDTO" resultType="com.apollo.exchange.admin.analysis.dto.AnalysisDTO">
+        SELECT COUNT(W.WALLET_ID) AS WALLET_COUNT
+        FROM WALLET W
+        INNER JOIN WALLET_CLIENT WC ON W.WALLET_ID = WC.WALLET_ID
+        INNER JOIN CLIENT C ON WC.CLIENT_ID = C.CLIENT_ID
+        WHERE 1
+        <if test="symbols != null">
+            AND W.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''"><![CDATA[ AND W.REG_DATE >= #{searchDateStart} ]]></if>
+        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''"><![CDATA[ AND W.REG_DATE <= #{searchDateEnd} ]]></if>
+    </select>
+</mapper>

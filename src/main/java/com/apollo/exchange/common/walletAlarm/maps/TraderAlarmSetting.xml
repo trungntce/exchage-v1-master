@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TraderAlarmSetting">
+    <select id="selectOneByWalletId" parameterType="int" resultType="com.apollo.exchange.common.walletAlarm.dto.TraderAlarmSettingDTO">
+        SELECT
+            T.TRADER_ALARM_SETTING_ID
+            , T.WALLET_ID
+            , T.REPEAT_SECONDS
+            , T.PATH
+            , T.USE_YN
+            , T.REG_DATE
+        FROM TRADER_ALARM_SETTING T
+        WHERE T.WALLET_ID = #{walletId}
+    </select>
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.walletAlarm.dto.TraderAlarmSettingDTO">
+        INSERT INTO TRADER_ALARM_SETTING
+        (
+            WALLET_ID
+            , PATH
+            , REPEAT_SECONDS
+            , USE_YN
+        )
+        VALUES
+        (
+            #{walletId}
+            , #{path}
+            , #{repeatSeconds}
+            , 'Y'
+        )
+    </insert>
+    <update id="updateOne" parameterType="com.apollo.exchange.common.walletAlarm.dto.TraderAlarmSettingDTO">
+        UPDATE TRADER_ALARM_SETTING
+        SET
+            WALLET_ID = #{walletId}
+            , PATH = #{path}
+            , REPEAT_SECONDS = #{repeatSeconds}
+            , USE_YN = #{useYn}
+        WHERE TRADER_ALARM_SETTING_ID = #{traderAlarmSettingId}
+    </update>
+</mapper>

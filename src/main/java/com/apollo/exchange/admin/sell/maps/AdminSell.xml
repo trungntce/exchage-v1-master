@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminSell">
+
+    <!-- 토큰 리스트 카운트. -->
+    <select id="selectCount" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellSearchDTO" resultType="int">
+        <![CDATA[
+            SELECT
+                 COUNT(TS.SELL_ID)
+            FROM
+                TOKEN_SELL TS
+                LEFT JOIN TOKEN_SELL_TRADE_HISTORY TSTH ON TS.SELL_ID = TSTH.SELL_ID
+                LEFT JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+            WHERE 1=1
+        ]]>
+        <if test="keywordType != null &amp;&amp; keywordType !=''">
+            <![CDATA[       AND ${keywordType} like '%${keyword}%' ]]>
+        </if>
+        <if test="sellType != null &amp;&amp; sellType !=''">
+            <![CDATA[       AND SELL_TYPE = '${sellType}' ]]>
+        </if>
+        <if test="walletAddress != null &amp;&amp; walletAddress !=''">
+            <![CDATA[    AND (TS.SELLER_WALLET_ADDRESS = '${walletAddress}' OR TSTH.BUYER_WALLET_ADDRESS = '${walletAddress}') ]]>
+        </if>
+        <if test="symbol != null &amp;&amp; symbol !=''">
+            <![CDATA[    AND TS.SYMBOL = '${symbol}' ]]>
+        </if>
+        <if test="symbol != null &amp;&amp; symbol !=''"> AND C.SYMBOL = #{symbol} </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+        <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+            <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+            </if>
+            <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+            </if>
+        </if>
+    </select>
+
+    <!-- 토큰 리스트 가져오기. -->
+    <select id="selectSellList" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellSearchDTO" resultType="com.apollo.exchange.admin.sell.dto.AdminSellDTO">
+        <![CDATA[
+            SELECT *
+            FROM (
+                 SELECT
+                     @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                    , A.*
+                 FROM (
+                     SELECT
+                         TS.SELL_ID
+                         , TS.P_SELL_ID
+                         , TS.CLIENT_ID
+                         , C.NAME AS CLIENT_NAME
+                         , TS.SELL_TYPE
+                         , TS.SYMBOL
+                         , TS.VIEW_ROLE
+                         , TS.SELLER_WALLET_ADDRESS
+                         , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TS.SELLER_WALLET_ADDRESS) AS SELLER_NAME
+                         , TS.BANK_NAME
+                         , TS.BANK_OWNER
+                         , TS.BANK_ACCOUNT
+                         , TS.QUANTITY
+                         , TS.UNIT_PRICE
+                         , TS.TOTAL_PRICE
+                         , TS.STATE
+                         , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'STATE' AND CODE_VALUE=TS.STATE AND LANG_CODE='${langCode}') AS STATE_NAME
+                         , TS.DEL_YN
+                         , TSTH.TRADE_STATE
+                         , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'SELL_TRADE_STATE' AND CODE_VALUE=TSTH.TRADE_STATE AND LANG_CODE='${langCode}') AS TRADE_STATE_NAME
+                         , TSTH.BUYER_WALLET_ADDRESS
+                         , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TSTH.BUYER_WALLET_ADDRESS) AS BUYER_NAME
+                         , TSTH.TXID
+                         , TS.TRADE_COMPLETION_DATE
+                         , TS.REG_DATE
+                         , TS.REG_WALLET_ADDRESS
+                     FROM
+                        TOKEN_SELL TS
+                        LEFT JOIN TOKEN_SELL_TRADE_HISTORY TSTH ON TS.SELL_ID = TSTH.SELL_ID
+                        LEFT JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+                     WHERE 1=1
+        ]]>
+                    <if test="symbol != null &amp;&amp; symbol !=''"> AND C.SYMBOL = #{symbol} </if>
+                    <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+                    <if test="keywordType != null &amp;&amp; keywordType !=''">
+                        <![CDATA[       AND ${keywordType} like '%${keyword}%' ]]>
+                    </if>
+                    <if test="sellType != null &amp;&amp; sellType !=''">
+                        <![CDATA[       AND SELL_TYPE = '${sellType}' ]]>
+                    </if>
+                    <if test="walletAddress != null &amp;&amp; walletAddress !=''">
+                        <![CDATA[    AND (TS.SELLER_WALLET_ADDRESS = '${walletAddress}' OR TSTH.BUYER_WALLET_ADDRESS = '${walletAddress}') ]]>
+                    </if>
+                    <if test="symbol != null &amp;&amp; symbol !=''">
+                        <![CDATA[    AND TS.SYMBOL = '${symbol}' ]]>
+                    </if>
+                    <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+                        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                            <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+                        </if>
+                        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                            <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+                        </if>
+                    </if>
+        <![CDATA[
+                 ) A, (SELECT @ROWNUM :=0) TEMP
+        ]]>
+        <if test="orderByColumn != null &amp;&amp; orderByColumn !=''">
+            ORDER BY ${orderByColumn} ${orderByType}
+        </if>
+        <![CDATA[
+                 LIMIT ${start}, ${limit}
+             ) RESULT
+        ]]>
+    </select>
+
+    <!-- 토큰 상세 가져오기. -->
+    <select id="selectOne" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellSearchDTO" resultType="com.apollo.exchange.admin.sell.dto.AdminSellDTO">
+        <![CDATA[
+            SELECT
+                 TS.SELL_ID
+                 , TS.P_SELL_ID
+                 , TS.CLIENT_ID
+                 , C.NAME AS CLIENT_NAME
+                 , TS.SELL_TYPE
+                 , TS.SYMBOL
+                 , TS.VIEW_ROLE
+                 , TS.SELLER_WALLET_ADDRESS
+                 , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TS.SELLER_WALLET_ADDRESS) AS SELLER_NAME
+                 , TS.BANK_NAME
+                 , TS.BANK_OWNER
+                 , TS.BANK_ACCOUNT
+                 , TS.QUANTITY
+                 , TS.UNIT_PRICE
+                 , TS.TOTAL_PRICE
+                 , TS.STATE
+                 , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'STATE' AND CODE_VALUE=TS.STATE AND LANG_CODE='${langCode}') AS STATE_NAME
+                 , TS.DEL_YN
+                 , TSTH.TRADE_STATE
+                 , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'SELL_TRADE_STATE' AND CODE_VALUE=TSTH.TRADE_STATE AND LANG_CODE='${langCode}') AS TRADE_STATE_NAME
+                 , TSTH.BUYER_WALLET_ADDRESS
+                 , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TSTH.BUYER_WALLET_ADDRESS) AS BUYER_NAME
+                 , TSTH.TXID
+                 , TS.TRADE_COMPLETION_DATE
+                 , TS.REG_DATE
+                 , TS.REG_WALLET_ADDRESS
+            FROM
+                TOKEN_SELL TS
+                LEFT JOIN TOKEN_SELL_TRADE_HISTORY TSTH ON TS.SELL_ID = TSTH.SELL_ID
+                LEFT JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+            WHERE 1=1
+            AND TS.SELL_ID = '${sellId}'
+        ]]>
+        <if test="sellType != null &amp;&amp; sellType !=''">
+            <![CDATA[       AND SELL_TYPE = '${sellType}' ]]>
+        </if>
+    </select>
+
+    <select id="selectByPSellId" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellSearchDTO" resultType="com.apollo.exchange.admin.sell.dto.AdminSellDTO">
+            SELECT
+                 TS.SELL_ID
+                 , TS.P_SELL_ID
+                 , TS.CLIENT_ID
+                 , C.NAME AS CLIENT_NAME
+                 , TS.SELL_TYPE
+                 , TS.SYMBOL
+                 , TS.VIEW_ROLE
+                 , TS.SELLER_WALLET_ADDRESS
+                 , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TS.SELLER_WALLET_ADDRESS) AS SELLER_NAME
+                 , TS.BANK_NAME
+                 , TS.BANK_OWNER
+                 , TS.BANK_ACCOUNT
+                 , TS.QUANTITY
+                 , TS.UNIT_PRICE
+                 , TS.TOTAL_PRICE
+                 , TS.STATE
+                 , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'STATE' AND CODE_VALUE=TS.STATE AND LANG_CODE='${langCode}') AS STATE_NAME
+                 , TS.DEL_YN
+                 , TSTH.TRADE_STATE
+                 , (SELECT CODE_NAME FROM COMMON_CODE WHERE GROUP_NAME = 'SELL_TRADE_STATE' AND CODE_VALUE=TSTH.TRADE_STATE AND LANG_CODE='${langCode}') AS TRADE_STATE_NAME
+                 , TSTH.BUYER_WALLET_ADDRESS
+                 , (SELECT NAME FROM WALLET WHERE WALLET_ADDRESS = TSTH.BUYER_WALLET_ADDRESS) AS BUYER_NAME
+                 , TSTH.TXID
+                 , TS.TRADE_COMPLETION_DATE
+                 , TS.REG_DATE
+                 , TS.REG_WALLET_ADDRESS
+            FROM
+                TOKEN_SELL TS
+                LEFT JOIN TOKEN_SELL_TRADE_HISTORY TSTH ON TS.SELL_ID = TSTH.SELL_ID
+                LEFT JOIN CLIENT C ON TS.CLIENT_ID = C.CLIENT_ID
+            WHERE TS.P_SELL_ID = #{pSellId}
+    </select>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellDTO">
+        UPDATE
+            TOKEN_SELL
+        SET
+            P_SELL_ID = #{pSellId}
+            , CLIENT_ID = #{clientId}
+            , SELL_TYPE = #{sellType}
+            , SYMBOL = #{symbol}
+            , VIEW_ROLE = #{viewRole}
+            , SELLER_WALLET_ADDRESS = #{sellerWalletAddress}
+            , QUANTITY = #{quantity}
+            , UNIT_PRICE = #{unitPrice}
+            , TOTAL_PRICE = #{totalPrice}
+            , STATE = #{state}
+            , BANK_NAME = #{bankName}
+            , BANK_OWNER = #{bankOwner}
+            , BANK_ACCOUNT = #{bankAccount}
+            , DEL_YN = #{delYn}
+            , TRADE_COMPLETION_DATE = #{tradeCompletionDate}
+            , REG_DATE = #{regDate}
+        WHERE
+            SELL_ID = #{sellId}
+    </update>
+
+    <update id="updateState" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellDTO">
+        UPDATE
+            TOKEN_SELL
+        SET
+            STATE = #{state}
+            <if test="tradeCompletionDate != null"> , TRADE_COMPLETION_DATE = #{tradeCompletionDate} </if>
+        WHERE
+            SELL_ID = #{sellId}
+    </update>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellDTO" useGeneratedKeys="true" keyProperty="sellId" keyColumn="sell_id">
+        INSERT INTO TOKEN_SELL (CLIENT_ID , SELL_TYPE , SYMBOL , VIEW_ROLE , SELLER_WALLET_ADDRESS , QUANTITY , UNIT_PRICE , TOTAL_PRICE , STATE , BANK_NAME , BANK_OWNER , BANK_ACCOUNT , DEL_YN, REG_WALLET_ADDRESS )
+        VALUES (#{clientId}, #{sellType}, #{symbol}, #{viewRole}, #{sellerWalletAddress}, #{quantity}, #{unitPrice}, #{totalPrice}, #{state}, #{bankName}, #{bankOwner}, #{bankAccount}, #{delYn}, #{regWalletAddress} )
+    </insert>
+</mapper>

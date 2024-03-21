@@ -1,0 +1,4 @@
+<link rel="stylesheet" type="text/css" href="${baseUrl}/resources/skin/css/style.css">
+<link rel="stylesheet" type="text/css" href="${baseUrl}/resources/skin/css/style_mobile.css">
+<link rel="stylesheet" type="text/css" href="${baseUrl}/resources/css/default/all.min.css">
+

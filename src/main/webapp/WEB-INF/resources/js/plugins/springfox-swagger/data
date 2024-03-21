@@ -1,0 +1,973 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Exchange API reference for developers",
+        "version": "1.0",
+        "title": "Exchange API",
+        "termsOfService": "http://vietkosoft.com",
+        "contact": {
+            "name": "vietkosoft@gmail.com"
+        },
+        "license": {
+            "name": "Exchange License",
+            "url": "vietkosoft@gmail.com"
+        }
+    },
+    "host": "localhost:1996",
+    "basePath": "/",
+    "paths": {
+        "/api/auth/info": {
+            "get": {
+                "tags": [
+                    "api-auth-controller"
+                ],
+                "summary": "info",
+                "operationId": "infoUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/auth/travel/hobbies": {
+            "get": {
+                "tags": [
+                    "api-auth-controller"
+                ],
+                "summary": "travelHobbies",
+                "operationId": "travelHobbiesUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/hotel/{id}": {
+            "get": {
+                "tags": [
+                    "api-hotel-controller"
+                ],
+                "summary": "travelDetail",
+                "operationId": "travelDetailUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/hotel/{id}/metas": {
+            "get": {
+                "tags": [
+                    "api-hotel-controller"
+                ],
+                "summary": "metas",
+                "operationId": "metasUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/location": {
+            "get": {
+                "tags": [
+                    "api-controller"
+                ],
+                "summary": "location",
+                "operationId": "locationUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/post/comment": {
+            "post": {
+                "tags": [
+                    "api-post-controller"
+                ],
+                "summary": "postComment",
+                "operationId": "postCommentUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "comment",
+                        "description": "comment",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Comment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/post/like": {
+            "post": {
+                "tags": [
+                    "api-post-controller"
+                ],
+                "summary": "postLike",
+                "operationId": "postLikeUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "postUser",
+                        "description": "postUser",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PostUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/post/rate": {
+            "post": {
+                "tags": [
+                    "api-post-controller"
+                ],
+                "summary": "postRate",
+                "operationId": "postRateUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "postUser",
+                        "description": "postUser",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PostUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/post/{id_post}/comments": {
+            "get": {
+                "tags": [
+                    "api-post-controller"
+                ],
+                "summary": "comments",
+                "operationId": "commentsUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id_post",
+                        "in": "path",
+                        "description": "id_post",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/post/{id}": {
+            "get": {
+                "tags": [
+                    "api-post-controller"
+                ],
+                "summary": "get",
+                "operationId": "getUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/setting/tag/list": {
+            "get": {
+                "tags": [
+                    "api-setting-controller"
+                ],
+                "summary": "tagList",
+                "operationId": "tagListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/setting/tag/update": {
+            "post": {
+                "tags": [
+                    "api-setting-controller"
+                ],
+                "summary": "tagUpdate",
+                "operationId": "tagUpdateUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "idTags",
+                        "description": "idTags",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int32"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/ads": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "travelAds",
+                "operationId": "travelAdsUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/city/{code}": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "travelCity",
+                "operationId": "travelCityUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "code",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/hotel/{id}": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "hotelDetail",
+                "operationId": "hotelDetailUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/list": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "travelList",
+                "operationId": "travelListUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "s",
+                        "in": "query",
+                        "description": "s",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/top": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "travelTop",
+                "operationId": "travelTopUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/{id}": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "travelDetail",
+                "operationId": "travelDetailUsingGET_1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/{id}/hotel": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "travelHotel",
+                "operationId": "travelHotelUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "distance",
+                        "in": "query",
+                        "description": "distance",
+                        "required": false,
+                        "type": "number",
+                        "default": 10.0,
+                        "format": "double"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/travel/{id}/metas": {
+            "get": {
+                "tags": [
+                    "api-travel-controller"
+                ],
+                "summary": "metas",
+                "operationId": "metasUsingGET_1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/user/info": {
+            "get": {
+                "tags": [
+                    "api-controller"
+                ],
+                "summary": "userInfo",
+                "operationId": "userInfoUsingGET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/user/travel/hobbies": {
+            "get": {
+                "tags": [
+                    "api-controller"
+                ],
+                "summary": "travelHobbies",
+                "operationId": "travelHobbiesUsingGET_1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse«object»"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Comment": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdDate": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "idParent": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "idPost": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "idUser": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "PostUser": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "idPost": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "idUser": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "isLike": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "isRead": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "rate": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "ApiResponse«object»": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "enum": [
+                        "SUCCESS",
+                        "FAILED"
+                    ]
+                },
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "object"
+                },
+                "status": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        }
+    }
+}

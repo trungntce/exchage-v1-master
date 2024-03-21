@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminUser">
+
+    <!-- 유저 리스트 카운트. -->
+    <select id="selectCount" parameterType="com.apollo.exchange.admin.user.dto.AdminUserSearchDTO" resultType="int">
+        SELECT
+            COUNT(U.USER_ID)
+        FROM
+            USER U
+            LEFT JOIN USER_WALLET UW ON U.USER_ID = UW.USER_ID
+            LEFT JOIN WALLET W ON UW.WALLET_ID = W.WALLET_ID
+            LEFT JOIN WALLET_CLIENT WC ON W.WALLET_ID = WC.WALLET_ID
+            LEFT JOIN CLIENT C ON WC.CLIENT_ID = C.CLIENT_ID
+        WHERE 1
+        <if test="keywordType != null &amp;&amp; keywordType !=''"> AND ${keywordType} like '%${keyword}%' </if>
+        <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+            <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                <![CDATA[ AND ${timeSearchKey} >= ${searchDateStart} ]]>
+            </if>
+            <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                <![CDATA[ AND ${timeSearchKey} <= ${searchDateEnd} ]]>
+            </if>
+        </if>
+        <if test="symbol != null &amp;&amp; symbol !=''"> AND C.SYMBOL = #{symbol} </if>
+        <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+    </select>
+
+    <!-- 유저 리스트 가져오기. -->
+    <select id="selectUserList" parameterType="com.apollo.exchange.admin.user.dto.AdminUserSearchDTO" resultType="com.apollo.exchange.admin.user.dto.AdminUserDTO">
+        SELECT *
+        FROM (
+             SELECT
+                @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                , A.*
+             FROM (
+                 SELECT
+                     U.USER_ID
+                     , U.LOGIN_ID
+                     , U.LOGIN_PW
+                     , U.NAME
+                     , U.STATE
+                     , U.REG_DATE
+                     , COUNT(UW.WALLET_ID) AS WALLET_COUNT
+                     , GROUP_CONCAT(C.SYMBOL) AS SYMBOL
+                     , GROUP_CONCAT(C.CLIENT_CODE) AS CLIENT_CODE
+                FROM
+                    USER U
+                    LEFT JOIN USER_WALLET UW ON U.USER_ID = UW.USER_ID
+                    LEFT JOIN WALLET W ON UW.WALLET_ID = W.WALLET_ID
+                    LEFT JOIN WALLET_CLIENT WC ON W.WALLET_ID = WC.WALLET_ID
+                    LEFT JOIN CLIENT C ON WC.CLIENT_ID = C.CLIENT_ID
+                 WHERE 1
+                <if test="keywordType != null &amp;&amp; keywordType !=''">
+                        <![CDATA[       AND ${keywordType} like '%${keyword}%' ]]>
+                </if>
+                <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+                    <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                        <![CDATA[ AND ${timeSearchKey} >= ${searchDateStart} ]]>
+                    </if>
+                    <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                        <![CDATA[ AND ${timeSearchKey} <= ${searchDateEnd} ]]>
+                    </if>
+                </if>
+                <if test="symbol != null &amp;&amp; symbol !=''"> AND C.SYMBOL = #{symbol} </if>
+                <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+                GROUP BY U.USER_ID, U.LOGIN_ID , U.LOGIN_PW , U.NAME , U.STATE , U.REG_DATE
+            ) A, (SELECT @ROWNUM :=0) TEMP
+        <if test="orderByColumn != null &amp;&amp; orderByColumn !=''">
+            ORDER BY ${orderByColumn} ${orderByType}
+        </if>
+        <![CDATA[
+
+                 LIMIT ${start}, ${limit}
+             ) RESULT
+        ]]>
+    </select>
+
+    <!-- 유저 DTO 가져오기. -->
+    <select id="selectOne" parameterType="com.apollo.exchange.admin.user.dto.AdminUserSearchDTO" resultType="com.apollo.exchange.admin.user.dto.AdminUserDTO">
+        <![CDATA[
+            SELECT
+                U.USER_ID
+                 , U.LOGIN_ID
+                 , U.LOGIN_PW
+                 , U.NAME
+                 , U.STATE
+                 , U.REG_DATE
+                 , (SELECT COUNT(USER_ID) FROM USER_WALLET UW WHERE UW.USER_ID = U.USER_ID) AS WALLET_COUNT
+                 , W.WALLET_ID
+                 , W.EMAIL
+                 , W.WALLET_ADDRESS
+                 , W.BANK_NAME
+                 , W.BANK_OWNER
+                 , W.BANK_ACCOUNT
+                 , W.TEL
+                 , W.FEE
+                 , W.TOKEN_DEVICE_ID
+            FROM
+                USER U
+            INNER JOIN USER_WALLET UW ON U.USER_ID = UW.USER_ID
+            INNER JOIN WALLET W ON UW.WALLET_ID = W.WALLET_ID
+            WHERE U.USER_ID = #{userId}
+        ]]>
+    </select>
+
+    <!-- 유저 DTO 가져오기. -->
+    <select id="selectByLoginId" parameterType="com.apollo.exchange.admin.user.dto.AdminUserSearchDTO" resultType="com.apollo.exchange.admin.user.dto.AdminUserDTO">
+        <![CDATA[
+            SELECT
+                U.USER_ID
+                 , U.LOGIN_ID
+                 , U.LOGIN_PW
+                 , U.NAME
+                 , U.STATE
+                 , U.REG_DATE
+            FROM
+                USER U
+            WHERE LOGIN_ID = '${loginId}'
+        ]]>
+    </select>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.user.dto.UserDTO" useGeneratedKeys="true" keyProperty="userId" keyColumn="USER_ID">
+        INSERT INTO USER (
+        LOGIN_ID
+        , LOGIN_PW
+        , NAME
+        ) VALUE (
+        #{loginId}
+        , #{loginPw}
+        , #{name}
+        )
+    </insert>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.common.user.dto.UserDTO">
+        UPDATE
+        USER
+        SET
+        NAME = #{name},
+        <if test="loginPw != null &amp;&amp; loginPw != ''"> LOGIN_PW = #{loginPw}, </if>
+        STATE = #{state}
+        WHERE
+        USER_ID = #{userId}
+    </update>
+</mapper>

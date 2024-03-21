@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminSellTrade">
+
+    <select id="selectOneBySellId" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellTradeDTO" resultType="com.apollo.exchange.admin.sell.dto.AdminSellTradeDTO">
+        SELECT
+            SELL_TRADE_HISTORY_ID
+            , SELL_ID
+            , TRADE_STATE
+            , TXID
+            , BUYER_WALLET_ADDRESS
+            , REG_DATE
+        FROM
+            TOKEN_SELL_TRADE_HISTORY
+        WHERE
+            SELL_ID = #{sellId}
+    </select>
+
+    <update id="updateState" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellTradeDTO">
+        UPDATE
+            TOKEN_SELL_TRADE_HISTORY
+        SET
+            TRADE_STATE = #{state}
+        WHERE
+            SELL_ID = #{sellId}
+    </update>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellTradeDTO">
+        UPDATE
+            TOKEN_SELL_TRADE_HISTORY
+        SET
+            TRADE_STATE = #{tradeState}
+            , TXID = #{txid}
+            , BUYER_WALLET_ADDRESS = #{buyerWalletAddress}
+            , REG_DATE = #{regDate}
+        WHERE
+            SELL_ID = #{sellId}
+    </update>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.sell.dto.AdminSellTradeDTO" useGeneratedKeys="true" keyProperty="sellTradeHistoryId" keyColumn="sell_trade_history_id">
+        INSERT INTO TOKEN_SELL_TRADE_HISTORY (SELL_ID, TRADE_STATE, TXID, BUYER_WALLET_ADDRESS)
+        VALUES (#{sellId}, #{tradeState}, #{txid}, #{buyerWalletAddress})
+    </insert>
+</mapper>

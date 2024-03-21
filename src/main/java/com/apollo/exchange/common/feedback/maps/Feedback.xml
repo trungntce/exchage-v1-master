@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="Feedback">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.feedback.dto.FeedbackDTO" useGeneratedKeys="true"
+            keyProperty="feedbackId" keyColumn="feedback_id">
+        INSERT INTO FEEDBACK
+        (
+        REF_ID,
+        FEEDBACK_TYPE,
+        TITLE,
+        CONTENTS,
+        STATE,
+        POINT_EVALUATION,
+        CHECK_YN,
+        DEL_YN,
+        REG_USER,
+        IP_ADDRESS
+        )
+        VALUES
+        (
+        #{refId},
+        #{feedbackType},
+        #{title},
+        #{contents},
+        #{state},
+        #{pointEvaluation},
+        'N',
+        'N',
+        #{regUser},
+        #{ipAddress}
+        )
+    </insert>
+    <update id="updateOne" parameterType="com.apollo.exchange.common.feedback.dto.FeedbackDTO">
+        UPDATE FEEDBACK
+        SET
+        REF_ID = #{refId},
+        FEEDBACK_TYPE = #{feedbackType},
+        TITLE = #{title},
+        CONTENTS = #{contents},
+        STATE = #{state},
+        POINT_EVALUATION = #{pointEvaluation},
+        CHECK_YN = #{checkYn},
+        DEL_YN = #{delYn},
+        REG_USER = #{regUser},
+        REG_DATE = #{regDate},
+        IP_ADDRESS = #{ipAddress}
+        WHERE FEEDBACK_ID = #{feedbackId};
+
+    </update>
+
+    <select id="selectFeedback" parameterType="com.apollo.exchange.common.feedback.dto.FeedbackSearchDTO"
+            resultType="com.apollo.exchange.common.feedback.dto.FeedbackDTO">
+        SELECT
+        ROW_NUMBER() OVER(ORDER BY REG_DATE) AS ROW_NUM
+        , FEEDBACK_ID
+        , REF_ID
+        , FEEDBACK_TYPE
+        , TITLE
+        , CONTENTS
+        , STATE
+        , POINT_EVALUATION
+        , CHECK_YN
+        , DEL_YN
+        , REG_USER
+        , REG_DATE
+        , IP_ADDRESS
+        FROM FEEDBACK
+        WHERE DEL_YN = 'N'
+
+        <if test="getDetail != null">
+            AND FEEDBACK_ID = #{feedbackId} OR REF_ID = #{refId}
+        </if>
+
+        <if test="regUser != null &amp;&amp; regUser !=''">
+            AND REG_USER = #{regUser}
+        </if>
+
+        <if test="feedbackType != null &amp;&amp; feedbackType !=''">
+            AND FEEDBACK_TYPE = #{feedbackType}
+        </if>
+
+        <if test="checkYn != null &amp;&amp; checkYn !=''">
+            AND CHECK_YN = #{checkYn}
+        </if>
+
+        <if test="title != null &amp;&amp; title !=''">
+            AND TITLE = #{title}
+        </if>
+        <if test="refIds != null">
+            AND REF_ID IN
+            <foreach item="item" index="index" collection="refIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="states != null">
+            AND STATE IN
+            <foreach item="item" index="index" collection="states" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="state != null">
+            AND STATE = #{state}
+
+        </if>
+
+        <if test="startDateSearch != null &amp;&amp; startDateSearch !=''">
+            <![CDATA[
+                      AND REG_DATE >= #{startDateSearch}
+                  ]]>
+        </if>
+        <if test="endDateSearch != null &amp;&amp; endDateSearch !=''">
+            <![CDATA[
+                      AND REG_DATE <= #{endDateSearch}
+                  ]]>
+        </if>
+
+        <choose>
+            <when test="orderByColumn != null &amp;&amp; orderByColumn != ''">
+                ORDER BY ${orderByColumn} ${orderByType}
+            </when>
+            <otherwise>
+                ORDER BY REG_DATE DESC
+            </otherwise>
+        </choose>
+        LIMIT #{start}, #{limit}
+    </select>
+
+    <select id="selectOne" parameterType="com.apollo.exchange.common.feedback.dto.FeedbackSearchDTO"
+            resultType="com.apollo.exchange.common.feedback.dto.FeedbackDTO">
+        SELECT
+             FEEDBACK_ID
+            , REF_ID
+            , FEEDBACK_TYPE
+            , TITLE
+            , CONTENTS
+            , STATE
+            , POINT_EVALUATION
+            , CHECK_YN
+            , DEL_YN
+            , REG_USER
+            , REG_DATE
+            , IP_ADDRESS
+        FROM FEEDBACK
+            WHERE DEL_YN = 'N'
+            AND FEEDBACK_ID = #{feedbackId}
+
+    </select>
+</mapper>

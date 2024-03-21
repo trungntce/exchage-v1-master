@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="AdminWallet">
+
+    <!-- 토큰 리스트 카운트. -->
+    <select id="selectCount" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletSearchDTO" resultType="int">
+        <![CDATA[
+            SELECT
+                COUNT(W.WALLET_ID)
+            FROM
+                WALLET W
+                    LEFT JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+                    LEFT JOIN COMMON_CODE CC ON WR.ROLE = CC.CODE_VALUE AND LANG_CODE = '${langCode}'
+                    LEFT JOIN USER_WALLET UW ON W.WALLET_ID = UW.WALLET_ID
+                    LEFT JOIN USER U ON UW.USER_ID = U.USER_ID
+                    LEFT JOIN WALLET_CLIENT WC ON W.WALLET_ID = WC.WALLET_ID
+                    LEFT JOIN CLIENT C ON WC.CLIENT_ID = C.CLIENT_ID
+            WHERE 1=1
+        ]]>
+            <if test="loginId != null &amp;&amp; loginId !=''">
+                <![CDATA[        AND U.LOGIN_ID = '${loginId}' ]]>
+            </if>
+            <if test="keywordType != null &amp;&amp; keywordType !=''">
+                <![CDATA[        AND ${keywordType} like '%${keyword}%' ]]>
+            </if>
+            <if test="symbol != null &amp;&amp; symbol !=''"> AND W.SYMBOL = '${symbol}' </if>
+            <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+            <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+                <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                    <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+                </if>
+                <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                    <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+                </if>
+            </if>
+    </select>
+
+    <!-- 토큰 리스트 가져오기. -->
+    <select id="selectList" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletSearchDTO" resultType="com.apollo.exchange.admin.wallet.dto.AdminWalletDTO">
+        SELECT *
+        FROM (
+                 SELECT
+                     @ROWNUM := @ROWNUM + 1 AS ROWNUM
+                    , A.*
+                 FROM (
+                     SELECT
+                         W.WALLET_ID
+                         , W.SYMBOL
+                         , W.WALLET_ADDRESS
+                         , W.PRIVATE_KEY
+                         , W.WALLET_PW
+                         , W.BANK_NAME
+                         , W.BANK_OWNER
+                         , W.BANK_ACCOUNT
+                         , W.NAME
+                         , W.TEL
+                         , W.EMAIL
+                         , W.FEE
+                         , W.REG_DATE
+                         , WR.ROLE
+                         , CC.CODE_NAME AS ROLE_NAME
+                         , C.CLIENT_CODE
+                         , IFNULL(U.LOGIN_ID, '-') AS LOGIN_ID
+                     FROM
+                     WALLET W
+                     LEFT JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+                     LEFT JOIN COMMON_CODE CC ON WR.ROLE = CC.CODE_VALUE AND LANG_CODE = '${langCode}'
+                     LEFT JOIN USER_WALLET UW ON W.WALLET_ID = UW.WALLET_ID
+                     LEFT JOIN USER U ON UW.USER_ID = U.USER_ID
+                     LEFT JOIN WALLET_CLIENT WC ON W.WALLET_ID = WC.WALLET_ID
+                     LEFT JOIN CLIENT C ON WC.CLIENT_ID = C.CLIENT_ID
+
+                     WHERE 1
+                    <if test="loginId != null &amp;&amp; loginId !=''">
+                        <![CDATA[        AND U.LOGIN_ID = '${loginId}' ]]>
+                    </if>
+                    <if test="keywordType != null &amp;&amp; keywordType !=''">
+                        <![CDATA[        AND ${keywordType} like '%${keyword}%' ]]>
+                    </if>
+
+                    <if test="symbol != null &amp;&amp; symbol !=''"> AND W.SYMBOL = #{symbol} </if>
+                    <if test="clientCode != null &amp;&amp; clientCode !=''"> AND C.CLIENT_CODE = #{clientCode} </if>
+                    <if test="clientId != null &amp;&amp; clientId !=''"> AND C.CLIENT_ID = #{clientId} </if>
+                    <if test="timeSearchKey != null &amp;&amp; timeSearchKey !=''">
+                        <if test="searchDateStart != null &amp;&amp; searchDateStart !=''">
+                            <![CDATA[ AND ${timeSearchKey} >= '${searchDateStart}' ]]>
+                        </if>
+                        <if test="searchDateEnd != null &amp;&amp; searchDateEnd !=''">
+                            <![CDATA[ AND ${timeSearchKey} <= '${searchDateEnd}' ]]>
+                        </if>
+                    </if>
+                     ) A, (SELECT @ROWNUM :=0) TEMP
+        <if test="orderByColumn != null &amp;&amp; orderByColumn !=''">
+            ORDER BY ${orderByColumn} ${orderByType}
+        </if>
+        <![CDATA[
+                     LIMIT ${start}, ${limit}
+             ) RESULT
+        ]]>
+    </select>
+
+    <!-- 토큰 상세 가져오기. -->
+    <select id="selectOne" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletSearchDTO" resultType="com.apollo.exchange.admin.wallet.dto.AdminWalletDTO">
+        <![CDATA[
+            SELECT
+                W.WALLET_ID
+                 , W.SYMBOL
+                 , W.WALLET_ADDRESS
+                 , W.PRIVATE_KEY
+                 , W.WALLET_PW
+                 , W.BANK_NAME
+                 , W.BANK_OWNER
+                 , W.BANK_ACCOUNT
+                 , W.NAME
+                 , W.TEL
+                 , W.EMAIL
+                 , W.FEE
+                 , W.REG_DATE
+                 , WR.ROLE
+                 , CC.CODE_NAME AS ROLE_NAME
+                 , IFNULL(U.LOGIN_ID, '-') AS LOGIN_ID
+                 , C.CLIENT_CODE
+            FROM
+                WALLET W
+                LEFT JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+                LEFT JOIN COMMON_CODE CC ON WR.ROLE = CC.CODE_VALUE AND LANG_CODE = '${langCode}'
+                LEFT JOIN USER_WALLET UW ON W.WALLET_ID = UW.WALLET_ID
+                LEFT JOIN USER U ON UW.USER_ID = U.USER_ID
+                LEFT JOIN WALLET_CLIENT WC ON WC.WALLET_ID = W.WALLET_ID
+                LEFT JOIN CLIENT C ON WC.CLIENT_ID = C.CLIENT_ID
+            WHERE 1]]>
+            <if test="walletId != null &amp;&amp; walletId !=''"> AND W.WALLET_ID = #{walletId} </if>
+            <if test="walletAddress != null &amp;&amp; walletAddress !=''"> AND W.WALLET_ADDRESS = #{walletAddress} </if>
+    </select>
+
+    <select id="selectListNoLimit" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletSearchDTO" resultType="com.apollo.exchange.admin.wallet.dto.AdminWalletDTO">
+        SELECT
+            W.WALLET_ID
+            , W.SYMBOL
+            , W.WALLET_ADDRESS
+            , W.PRIVATE_KEY
+            , W.WALLET_PW
+            , W.BANK_NAME
+            , W.BANK_OWNER
+            , W.BANK_ACCOUNT
+            , W.NAME
+            , W.TEL
+            , W.EMAIL
+            , W.FEE
+            , W.REG_DATE
+            , WR.ROLE
+        FROM WALLET W
+        INNER JOIN WALLET_ROLE WR ON W.WALLET_ID = WR.WALLET_ID
+        WHERE 1
+        <if test="roles != null">
+            AND WR.ROLE IN
+            <foreach item="item" index="index" collection="roles" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="symbols != null">
+            AND W.SYMBOL IN
+            <foreach item="item" index="index" collection="symbols" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletDTO" useGeneratedKeys="true" keyProperty="walletId" keyColumn="wallet_id">
+        INSERT INTO WALLET (SYMBOL, WALLET_ADDRESS, PRIVATE_KEY, WALLET_PW, BANK_NAME, BANK_OWNER, BANK_ACCOUNT, NAME, TEL, EMAIL, FEE)
+        VALUES (#{symbol}, #{walletAddress}, #{privateKey}, #{walletPw}, #{bankName}, #{bankOwner}, #{bankAccount}, #{name}, #{tel}, #{email}, #{fee})
+    </insert>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.admin.wallet.dto.AdminWalletDTO">
+        UPDATE
+            WALLET
+        SET
+            NAME = #{name}
+            <if test="walletPw != null &amp;&amp; walletPw != ''">, WALLET_PW = #{walletPw} </if>
+            , TEL = #{tel}
+            , FEE = #{fee}
+            , BANK_NAME = #{bankName}
+            , BANK_OWNER = #{bankOwner}
+            , BANK_ACCOUNT = #{bankAccount}
+            , EMAIL = #{email}
+        WHERE
+            WALLET_ID = #{walletId}
+    </update>
+</mapper>

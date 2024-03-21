@@ -1,0 +1,13 @@
+
+<link href="${_ctx}/resources/css/validator.css" rel="stylesheet" />
+<%--<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />--%>
+<%--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />--%>
+<%--<link href="${_ctx}/resources/css/default/pace-theme-flash.css" rel="stylesheet" />--%>
+<%--<link href="${_ctx}/resources/css/default/jquery-ui.min.css" rel="stylesheet" />--%>
+<%--<link href="${_ctx}/resources/css/default/animate.min.css" rel="stylesheet" />--%>
+<%--<link href="${_ctx}/resources/css/default/all.min.css" rel="stylesheet" />--%>
+<%--<link href="${_ctx}/resources/css/default/styles.css" rel="stylesheet" />--%>
+<%--<!-- <link href="${_ctx}/resources/css/common.css" rel="stylesheet" />-->--%>
+<%--<link href="${_ctx}/resources/css/modal.css" rel="stylesheet" />--%>
+<%--<link href="${_ctx}/resources/css/hamburger-menu.css" rel="stylesheet" />--%>
+<%--<link href="${_ctx}/resources/js/plugins/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet" />--%>

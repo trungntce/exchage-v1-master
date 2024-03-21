@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TokenSellTradeHistory">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.web.sell.dto.SellTradeDTO">
+
+        <![CDATA[
+            INSERT INTO TOKEN_SELL_TRADE_HISTORY
+            (
+                SELL_ID
+                , TRADE_STATE
+                , TXID
+                , BUYER_WALLET_ADDRESS
+            )
+            VALUES
+            (
+                 #{sellId}
+                , #{tradeState}
+                , #{txid}
+                , #{buyerWalletAddress}
+            )
+        ]]>
+        <selectKey resultType="Int" keyProperty="sellTradeHistoryId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectOneBySellTradeHistoryId" parameterType="com.apollo.exchange.web.sell.dto.SellTradeDTO"
+            resultType="com.apollo.exchange.web.sell.dto.SellTradeDTO">
+
+            SELECT
+                TSTH.SELL_TRADE_HISTORY_ID
+                , TSTH.SELL_ID
+                , TSTH.TRADE_STATE
+                , TSTH.TXID
+                , TSTH.BUYER_WALLET_ADDRESS
+                , TSTH.REG_DATE
+            FROM
+                TOKEN_SELL_TRADE_HISTORY TSTH
+            WHERE
+                TSTH.SELL_TRADE_HISTORY_ID = #{sellTradeHistoryId}
+                AND TSTH.TRADE_STATE !=5
+    </select>
+    <update id="updateOne" parameterType="com.apollo.exchange.web.sell.dto.SellTradeDTO">
+
+        UPDATE TOKEN_SELL_TRADE_HISTORY
+            SET
+                SELL_ID = #{sellId}
+                , TRADE_STATE = #{tradeState}
+                , TXID = #{txid}
+                , BUYER_WALLET_ADDRESS = #{buyerWalletAddress}
+        WHERE
+            SELL_TRADE_HISTORY_ID = #{sellTradeHistoryId}
+
+    </update>
+
+    <update id="updateStateByIds" parameterType="com.apollo.exchange.web.sell.dto.SellTradeDTO">
+        UPDATE
+            TOKEN_SELL_TRADE_HISTORY
+        SET
+            TRADE_STATE = #{tradeState}
+        WHERE
+            SELL_TRADE_HISTORY_ID IN
+                <foreach item="item" index="index" collection="sellTradeHistoryIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+    </update>
+
+    <select id="selectOutOfDateList" parameterType="com.apollo.exchange.web.sell.dto.SellTradeDTO"
+            resultType="com.apollo.exchange.web.sell.dto.SellTradeDTO">
+
+        SELECT
+        TS.SELL_ID
+        , TS.SELL_TYPE
+        , TS.STATE
+        , TSTH.SELL_TRADE_HISTORY_ID
+        , TSTH.TRADE_STATE
+        , TSTH.BUYER_WALLET_ADDRESS
+        FROM
+        TOKEN_SELL TS
+        LEFT JOIN
+        TOKEN_SELL_TRADE_HISTORY TSTH
+        ON TS.SELL_ID = TSTH.SELL_ID
+        WHERE
+        TSTH.TRADE_STATE IN
+        <foreach item="item" index="index" collection="tradeStates" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <![CDATA[
+            AND TSTH.REG_DATE <  DATE_SUB(NOW(), INTERVAL #{minute} MINUTE)
+         ]]>
+    </select>
+</mapper>

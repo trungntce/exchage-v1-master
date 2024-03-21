@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AccessLog">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.accessLog.dto.AccessLogDTO">
+        INSERT INTO ACCESS_LOG (
+            WALLET_ID
+            , TRACKING
+            , LOGIN_TYPE
+            , OS
+            , DEVICE
+            , BROWSER
+            , IP
+        ) VALUES (
+            #{walletId}
+            , #{tracking}
+            , #{loginType}
+            , #{os}
+            , #{device}
+            , #{browser}
+            , #{ip}
+        )
+    </insert>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+
+    <insert id="insertOne" parameterType="com.apollo.exchange.common.user.dto.UserDTO" useGeneratedKeys="true" keyProperty="userId" keyColumn="USER_ID">
+        INSERT INTO USER (
+            LOGIN_ID
+            , LOGIN_PW
+            , NAME
+        ) VALUE (
+            #{loginId}
+            , #{loginPw}
+            , #{name}
+        )
+    </insert>
+
+    <update id="updateOne" parameterType="com.apollo.exchange.common.user.dto.UserDTO">
+        UPDATE
+            USER
+        SET
+            NAME = #{name},
+            <if test="loginPw != null &amp;&amp; loginPw != ''"> LOGIN_PW = #{loginPw}, </if>
+            STATE = #{state}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+    <select id="selectUserByWalletAddress" resultType="com.apollo.exchange.common.user.dto.UserDTO">
+        SELECT
+            U.USER_ID
+            , U.LOGIN_ID
+            , U.NAME
+        FROM WALLET W
+        LEFT JOIN USER_WALLET UW ON W.WALLET_ID = UW.WALLET_ID
+        LEFT JOIN USER U ON UW.USER_ID = U.USER_ID
+            WHERE
+                W.WALLET_ADDRESS = #{walletAddress}
+    </select>
+
+    <select id="selectUserByUserId" resultType="com.apollo.exchange.common.user.dto.UserDTO">
+        SELECT
+            U.USER_ID
+            , U.LOGIN_ID
+            , U.NAME
+        FROM USER U
+            WHERE
+        U.USER_ID = #{userId};
+    </select>
+
+
+</mapper>
